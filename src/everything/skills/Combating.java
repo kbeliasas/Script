@@ -10,6 +10,8 @@ import org.dreambot.api.methods.map.Area;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.utilities.Logger;
 
+import java.util.ArrayList;
+
 public class Combating {
 
     private static final Area CHICKENS = new Area(3231, 3296, 3235, 3290);
@@ -18,6 +20,11 @@ public class Combating {
     public static void attack() {
 
         if (!Players.getLocal().isAnimating()) {
+
+            if (Skills.getRealLevel(Skill.ATTACK) >= 20) {
+                Logger.log("Target level reached!");
+                ScriptManager.getScriptManager().stop();
+            }
 
             if (Inventory.isFull()) {
                 Main.state = States.PRAYER;
@@ -67,7 +74,24 @@ public class Combating {
                 && npc.distance() < 15);
     }
 
-    private static GroundItem getLoot() {
-        return GroundItems.closest(item -> item.getName().equalsIgnoreCase("Coins"));
+    private static ArrayList<GroundItem> getLoot() {
+        var tile = getLootTile();
+        var items = GroundItems.getGroundItems(tile);
+        var itemsFiltered = new ArrayList<GroundItem>();
+        items.forEach(item -> {
+            if (item.getName().equalsIgnoreCase("Coins")
+                    || item.getName().equalsIgnoreCase("Bones")
+                    || item.getName().equalsIgnoreCase("Cowhide")) {
+                itemsFiltered.add(item);
+            } else if (false) { //TODO
+                itemsFiltered.add(item);
+            }
+        });
+        return itemsFiltered;
+    }
+
+    private static Tile getLootTile() {
+        return GroundItems.closest(item -> item.distance() < 5
+                && item.canReach()).getTile();
     }
 }
