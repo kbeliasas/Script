@@ -20,35 +20,54 @@ public class Combating {
         if (!Players.getLocal().isAnimating()) {
 
             if (Inventory.isFull()) {
-                Prayering.buryBones();
-                if (Inventory.emptySlotCount() < 5) {
-                    Main.state = States.BANKING;
-                }
+                Main.state = States.PRAYER;
             }
 
-            if (Main.state.equals(States.PRAYER) || Main.state.equals(States.BANKING)) {
+            if (Main.state.equals(States.PRAYER)) {
+                Prayering.buryBones();
+                if (Main.state.equals(States.IDLE) && Inventory.emptySlotCount() < 5) {
+                    Main.state = States.BANKING;
+                }
                 return;
             }
+
+            if (Main.state.equals(States.BANKING)) {
+                if (Banking.openBank()) {
+                    Bank.depositAllItems();
+                    Main.state = States.IDLE;
+                }
+                return;
+            }
+
             if (Players.getLocal().isInCombat()) {
                 Main.state = States.COMBATING;
                 return;
             }
+
             var item = GroundItems.closest("Coins", "Bones", "Cowhide");
             if (item != null && item.distance() < 3) {
                 item.interact("Take");
                 Main.state = States.IDLE;
             } else {
-                Logger.log("Finding cow");
-                var cow = NPCs.closest("Cow");
-                if (cow != null && cow.canReach() && !cow.isInCombat()) {
-                    cow.interact("Attack");
-                } else if (cow == null) {
+                Logger.log("Finding npc");
+                var npc = getMob();
+                if (npc != null) {
+                    npc.interact("Attack");
+                } else
                     Walking.walk(COWS.getRandomTile());
-                } else {
-                    Walking.walk(COWS.getRandomTile());
-                    Logger.log("Something wrong: " + cow);
-                }
             }
         }
+    }
+
+
+    private static NPC getMob() {
+        return NPCs.closest(npc -> npc.getName().equalsIgnoreCase("Cow")
+                && npc.canReach()
+                && !npc.isInCombat()
+                && npc.distance() < 15);
+    }
+
+    private static GroundItem getLoot() {
+        return GroundItems.closest(item -> item.getName().equalsIgnoreCase("Coins"));
     }
 }

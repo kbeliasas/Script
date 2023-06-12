@@ -10,6 +10,17 @@ import org.dreambot.api.utilities.Sleep;
 
 public class Banking {
 
+
+    public static boolean openBank() {
+        Main.state = States.BANKING;
+        var bank = Bank.getClosestBankLocation();
+//        var bank = BankLocation.LUMBRIDGE;
+        if (bank != null) {
+            return Bank.open(bank);
+        }
+        return false;
+    }
+
     public static void putAllItems() {
         Main.state = States.BANKING;
         var bank = Bank.getClosestBankLocation();
