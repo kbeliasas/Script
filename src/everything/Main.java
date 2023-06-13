@@ -5,27 +5,14 @@ import everything.naturalmouse.support.DefaultMouseMotionNature;
 import everything.naturalmouse.support.RsMouseInfoAccessor;
 import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
-import everything.skills.*;
+import everything.skills.Combating;
 import org.dreambot.api.Client;
 import org.dreambot.api.input.mouse.algorithm.StandardMouseAlgorithm;
 import org.dreambot.api.methods.Calculations;
-import org.dreambot.api.methods.ViewportTools;
-import org.dreambot.api.methods.container.impl.Inventory;
-import org.dreambot.api.methods.container.impl.bank.Bank;
-import org.dreambot.api.methods.container.impl.bank.BankLocation;
-import org.dreambot.api.methods.grandexchange.GrandExchange;
-import org.dreambot.api.methods.input.Camera;
-import org.dreambot.api.methods.interactive.GameObjects;
-import org.dreambot.api.methods.interactive.Players;
-import org.dreambot.api.methods.skills.Skill;
-import org.dreambot.api.methods.skills.Skills;
-import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
-import org.dreambot.api.script.ScriptManager;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.api.utilities.Logger;
-import org.dreambot.core.Instance;
 
 @ScriptManifest(name = "Everything", description = "My script description!", author = "Karolis",
         version = 1.0, category = Category.UTILITY, image = "")
@@ -52,7 +39,10 @@ public class Main extends AbstractScript {
 //        Smithing.smelt();
 //        Smithing.smith();
 //        Woodcutting.cut();
-        Crafting.makeLeatherArmor();
+//        Crafting.makeLeatherArmor();
+//        Bank.open(BankLocation.FALADOR_EAST);
+//        Bank.open(BankLocation.VARROCK_WEST);
+        Combating.attack();
         stateTracker();
         return Calculations.random(1000, 2000);
 

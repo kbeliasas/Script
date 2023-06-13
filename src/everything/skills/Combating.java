@@ -3,12 +3,20 @@ package everything.skills;
 import everything.Main;
 import everything.States;
 import org.dreambot.api.methods.container.impl.Inventory;
+import org.dreambot.api.methods.container.impl.bank.Bank;
 import org.dreambot.api.methods.interactive.NPCs;
 import org.dreambot.api.methods.interactive.Players;
 import org.dreambot.api.methods.item.GroundItems;
 import org.dreambot.api.methods.map.Area;
+import org.dreambot.api.methods.map.Tile;
+import org.dreambot.api.methods.skills.Skill;
+import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
+import org.dreambot.api.script.ScriptManager;
 import org.dreambot.api.utilities.Logger;
+import org.dreambot.api.wrappers.interactive.NPC;
+import org.dreambot.api.wrappers.items.GroundItem;
+import org.dreambot.api.wrappers.items.Item;
 
 import java.util.ArrayList;
 
@@ -76,15 +84,14 @@ public class Combating {
 
     private static ArrayList<GroundItem> getLoot() {
         var tile = getLootTile();
-        var items = GroundItems.getGroundItems(tile);
+        var items = GroundItems.getForTile(tile);
         var itemsFiltered = new ArrayList<GroundItem>();
         items.forEach(item -> {
             if (item.getName().equalsIgnoreCase("Coins")
                     || item.getName().equalsIgnoreCase("Bones")
                     || item.getName().equalsIgnoreCase("Cowhide")) {
                 itemsFiltered.add(item);
-            } else if (false) { //TODO
-                itemsFiltered.add(item);
+                Logger.info("Looted: " + item.getName());
             }
         });
         return itemsFiltered;
