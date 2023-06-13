@@ -2,6 +2,7 @@ package everything.skills;
 
 import everything.Main;
 import everything.States;
+import everything.Util;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
@@ -11,7 +12,6 @@ import org.dreambot.api.methods.interactive.Players;
 import org.dreambot.api.methods.item.GroundItems;
 import org.dreambot.api.methods.map.Area;
 import org.dreambot.api.methods.map.Tile;
-import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.ScriptManager;
@@ -37,7 +37,7 @@ public class Combating {
                 return;
             }
 
-            if (Skills.getRealLevel(Skill.DEFENCE) >= 20) {
+            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal) {
                 Logger.log("Target level reached!");
                 if (Banking.openBank()) {
                     Bank.depositAllItems();
@@ -113,12 +113,15 @@ public class Combating {
                     || item.getName().equalsIgnoreCase("Cowhide")
                     || item.getName().toLowerCase(Locale.ROOT).contains("clue")) {
                 itemsFiltered.add(item);
-                Logger.info("Looted: " + item.getName());
+                Logger.info("Looted: " + item.getName() + ". Manually included from List");
+                Util.addLoot(item.getName());
             } else if (price > 1000) {
                 itemsFiltered.add(item);
                 Logger.info("Looted: " + item.getName() + " for :" + price);
+                Util.addLoot(item.getName());
             } else {
                 Logger.info("ignored: " + item.getName() + " for :" + price);
+                Util.addIgnored(item.getName());
             }
         });
         return itemsFiltered;
