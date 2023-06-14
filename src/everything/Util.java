@@ -9,6 +9,14 @@ public class Util {
         }
     }
 
+    public static void addLoot(String key, int amount) {
+        if (!Main.looted.containsKey(key)) {
+            Main.looted.put(key, amount);
+        } else {
+            Main.looted.put(key, Main.looted.get(key) + amount);
+        }
+    }
+
     public static void addIgnored(String key) {
         if (!Main.ignored.containsKey(key)) {
             Main.ignored.put(key, 1);

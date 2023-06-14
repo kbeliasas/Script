@@ -7,6 +7,8 @@ import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
 import everything.skills.Combating;
 import everything.skills.Crafting;
+import everything.skills.RuneCrafting;
+import everything.skills.RuneEssence;
 import org.dreambot.api.Client;
 import org.dreambot.api.input.mouse.algorithm.StandardMouseAlgorithm;
 import org.dreambot.api.methods.Calculations;
@@ -35,8 +37,8 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.CRAFTING;
-    public static int goal = 28;
+    public static Skill skillToTrain = Skill.RUNECRAFTING;
+    public static int goal = 900;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -55,8 +57,8 @@ public class Main extends AbstractScript {
     public int onLoop() {
 
 //        Bank.open(BankLocation.FALADOR_EAST);
-        Bank.open(BankLocation.VARROCK_WEST);
-//        Crafting.makeLeatherArmor();
+//        Bank.open(BankLocation.VARROCK_WEST);
+        RuneCrafting.craft();
         stateTracker();
         return Calculations.random(1000, 2000);
 
@@ -123,41 +125,42 @@ public class Main extends AbstractScript {
                 String.format("%d:%02d:%02d",
                         TimeUnit.MILLISECONDS.toHours(timeToLvl),
                         TimeUnit.MILLISECONDS.toMinutes(timeToLvl),
-                        TimeUnit.MILLISECONDS.toSeconds(timeToLvl)));
+                        (TimeUnit.MILLISECONDS.toSeconds(timeToLvl)) % 60));
         g.drawString(timeRunning, 5, 35);
         g.drawString(levels, 5, 55);
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
+            message.append("Looted: ");
             looted.forEach((lootName, lootCount) ->
-                    message.append("Looted : ").append(lootCount).append(" ").append(lootName).append(". "));
+                    message.append(lootCount).append(" ").append(lootName).append(". "));
             g.drawString(message.toString(), 5, 75);
         }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
+            message.append("Ignored: ");
             ignored.forEach((lootName, lootCount) ->
-                    message.append("Ignored : ").append(lootCount).append(" ").append(lootName).append(". "));
+                    message.append(lootCount).append(" ").append(lootName).append(". "));
             g.drawString(message.toString(), 5, 95);
         }
     }
 
-    @Override
-    public void stop() {
-        Client.getInstance().setMouseMovementAlgorithm(new StandardMouseAlgorithm());
+    public static void printResults() {
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
+            message.append("Looted : ");
             looted.forEach((lootName, lootCount) ->
-                    message.append("Looted : ").append(lootCount).append(" ").append(lootName)
+                    message.append(lootCount).append(" ").append(lootName)
                             .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K"));
             Logger.info(message.toString());
         }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
+            message.append("Ignored : ");
             ignored.forEach((lootName, lootCount) ->
-                    message.append("Ignored : ").append(lootCount).append(" ").append(lootName).append(". ")
+                    message.append(lootCount).append(" ").append(lootName).append(". ")
                             .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K"));
             Logger.info(message.toString());
         }
-        Sleep.sleep(2000);
     }
 
     private void stateTracker() {
