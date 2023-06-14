@@ -31,9 +31,10 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.DEFENCE;
+    public static Skill skillToTrain = Skill.STRENGTH;
     public static int goal = 20;
     private static States cashedState = States.IDLE;
+    private static Instant startTime;
 
     @Override
 
@@ -43,6 +44,7 @@ public class Main extends AbstractScript {
         mouseMotionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
         Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
         SkillTracker.start(skillToTrain);
+        startTime = Instant.now();
     }
 
     @Override
@@ -113,7 +115,7 @@ public class Main extends AbstractScript {
 
     @Override
     public void onPaint(Graphics2D g) {
-        var duration = Instant.now().toEpochMilli() - SkillTracker.getStartTime(skillToTrain);
+        var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
         var levels = String.format("Skill %s. Levels gained: %s.",
                 skillToTrain.getName(),

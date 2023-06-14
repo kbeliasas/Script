@@ -128,8 +128,11 @@ public class Combating {
     }
 
     private static Tile getLootTile() {
-        return GroundItems.closest(item -> item.distance() < 5
-                        && item.canReach())
-                .getTile();
+        var groundItem =  GroundItems.closest(item -> item.distance() < 5
+                        && item.canReach());
+        if (groundItem != null) {
+            return groundItem.getTile();
+        }
+        return null;
     }
 }
