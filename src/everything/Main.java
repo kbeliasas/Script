@@ -6,9 +6,12 @@ import everything.naturalmouse.support.RsMouseInfoAccessor;
 import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
 import everything.skills.Combating;
+import everything.skills.Crafting;
 import org.dreambot.api.Client;
 import org.dreambot.api.input.mouse.algorithm.StandardMouseAlgorithm;
 import org.dreambot.api.methods.Calculations;
+import org.dreambot.api.methods.container.impl.bank.Bank;
+import org.dreambot.api.methods.container.impl.bank.BankLocation;
 import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.SkillTracker;
@@ -22,6 +25,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "Everything", description = "My script description!", author = "Karolis",
         version = 1.0, category = Category.UTILITY, image = "")
@@ -31,8 +35,8 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.STRENGTH;
-    public static int goal = 20;
+    public static Skill skillToTrain = Skill.CRAFTING;
+    public static int goal = 28;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -50,14 +54,9 @@ public class Main extends AbstractScript {
     @Override
     public int onLoop() {
 
-//        Mining.mine();
-//        Smithing.smelt();
-//        Smithing.smith();
-//        Woodcutting.cut();
-//        Crafting.makeLeatherArmor();
 //        Bank.open(BankLocation.FALADOR_EAST);
-//        Bank.open(BankLocation.VARROCK_WEST);
-        Combating.attack();
+        Bank.open(BankLocation.VARROCK_WEST);
+//        Crafting.makeLeatherArmor();
         stateTracker();
         return Calculations.random(1000, 2000);
 
@@ -116,10 +115,15 @@ public class Main extends AbstractScript {
     @Override
     public void onPaint(Graphics2D g) {
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
+        var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
-        var levels = String.format("Skill %s. Levels gained: %s.",
+        var levels = String.format("Skill %s. Levels gained: %s. Time to next level: %s",
                 skillToTrain.getName(),
-                SkillTracker.getGainedLevels(skillToTrain));
+                SkillTracker.getGainedLevels(skillToTrain),
+                String.format("%d:%02d:%02d",
+                        TimeUnit.MILLISECONDS.toHours(timeToLvl),
+                        TimeUnit.MILLISECONDS.toMinutes(timeToLvl),
+                        TimeUnit.MILLISECONDS.toSeconds(timeToLvl)));
         g.drawString(timeRunning, 5, 35);
         g.drawString(levels, 5, 55);
         if (!looted.isEmpty()) {
