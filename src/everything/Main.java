@@ -37,8 +37,8 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.RUNECRAFTING;
-    public static int goal = 900;
+    public static Skill skillToTrain = Skill.CRAFTING;
+    public static int goal = 26;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -58,7 +58,8 @@ public class Main extends AbstractScript {
 
 //        Bank.open(BankLocation.FALADOR_EAST);
 //        Bank.open(BankLocation.VARROCK_WEST);
-        RuneCrafting.craft();
+//        RuneCrafting.craft();
+        Combating.attack();
         stateTracker();
         return Calculations.random(1000, 2000);
 
@@ -132,14 +133,16 @@ public class Main extends AbstractScript {
             var message = new StringBuilder();
             message.append("Looted: ");
             looted.forEach((lootName, lootCount) ->
-                    message.append(lootCount).append(" ").append(lootName).append(". "));
+                    message.append(lootCount).append(" ").append(lootName)
+                            .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             g.drawString(message.toString(), 5, 75);
         }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
             message.append("Ignored: ");
             ignored.forEach((lootName, lootCount) ->
-                    message.append(lootCount).append(" ").append(lootName).append(". "));
+                    message.append(lootCount).append(" ").append(lootName)
+                            .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             g.drawString(message.toString(), 5, 95);
         }
     }
@@ -150,15 +153,15 @@ public class Main extends AbstractScript {
             message.append("Looted : ");
             looted.forEach((lootName, lootCount) ->
                     message.append(lootCount).append(" ").append(lootName)
-                            .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K"));
+                            .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             Logger.info(message.toString());
         }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
             message.append("Ignored : ");
             ignored.forEach((lootName, lootCount) ->
-                    message.append(lootCount).append(" ").append(lootName).append(". ")
-                            .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K"));
+                    message.append(lootCount).append(" ").append(lootName)
+                            .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             Logger.info(message.toString());
         }
     }

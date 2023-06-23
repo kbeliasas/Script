@@ -8,8 +8,8 @@ import org.dreambot.api.utilities.Logger;
 public class Prayering {
 
     public static void buryBones() {
-        if (Inventory.contains("Bones")) {
-            var bone = Inventory.getRandom("Bones");
+        if (Inventory.contains("Bones", "Big bones")) {
+            var bone = Inventory.getRandom("Bones", "Big bones");
             bone.interact();
         } else {
             Logger.log("No more bones");

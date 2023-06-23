@@ -11,7 +11,7 @@ import org.dreambot.api.methods.interactive.NPCs;
 import org.dreambot.api.methods.interactive.Players;
 import org.dreambot.api.methods.item.GroundItems;
 import org.dreambot.api.methods.map.Area;
-import org.dreambot.api.methods.map.Tile;
+import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.ScriptManager;
@@ -21,12 +21,19 @@ import org.dreambot.api.wrappers.interactive.NPC;
 import org.dreambot.api.wrappers.items.GroundItem;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Combating {
 
     private static final Area CHICKENS = new Area(3231, 3296, 3235, 3290);
     private static final Area COWS = new Area(3254, 3293, 3264, 3256);
+    private static final Area LESSER_DEMON = new Area(3108, 3163, 3111, 3159, 2);
+    private static final Area LUMBRIDGE_SWAMP = new Area(3158, 3193, 3230, 3168);
+    public static final String FOOD = "Anchovies";
+    public static final int FOOD_AMOUNT = 4;
+    private static boolean finishGame = false;
+    private static boolean noMoreFood = false;
 
     public static void attack() {
 
@@ -34,16 +41,20 @@ public class Combating {
 
             if (Players.getLocal().isInCombat()) {
                 Main.state = States.COMBATING;
+                if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 15) {
+                    Inventory.interact(FOOD);
+                }
                 return;
             }
 
-            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal) {
+            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal || finishGame) {
                 Logger.log("Target level reached!");
                 if (Banking.openBank()) {
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(800, 1200));
                     Bank.close();
                     Sleep.sleep(Calculations.random(800, 1200));
+                    Main.printResults();
                     ScriptManager.getScriptManager().stop();
                 }
             }
@@ -52,9 +63,15 @@ public class Combating {
                 Main.state = States.PRAYER;
             }
 
+            if (Inventory.count(FOOD) <= 3 && Main.state.equals(States.IDLE)) {
+                Main.state = States.PRAYER;
+                noMoreFood = true;
+            }
+
             if (Main.state.equals(States.PRAYER)) {
                 Prayering.buryBones();
-                if (Main.state.equals(States.IDLE) && Inventory.emptySlotCount() < 5) {
+                if (Main.state.equals(States.IDLE)
+                        && (Inventory.emptySlotCount() < 5 || noMoreFood)) {
                     Main.state = States.BANKING;
                 }
                 return;
@@ -62,8 +79,17 @@ public class Combating {
 
             if (Main.state.equals(States.BANKING)) {
                 if (Banking.openBank()) {
-                    Bank.depositAllItems();
+                    Bank.depositAllExcept(FOOD);
+                    var needMore = FOOD_AMOUNT - Inventory.count(FOOD);
+                    Bank.withdraw(FOOD, needMore);
+                    if (Bank.count(FOOD) <= FOOD_AMOUNT) {
+                        finishGame = true;
+                    }
+                    if (Bank.count("Cowhide") >= Main.goal) {
+                        finishGame = true;
+                    }
                     Main.state = States.IDLE;
+                    noMoreFood = false;
                 }
                 return;
             }
@@ -93,46 +119,45 @@ public class Combating {
 
 
     private static NPC getMob() {
-        return NPCs.closest(npc -> npc.getName().equalsIgnoreCase("Cow")
+        return NPCs.closest(npc -> npc.getName().equalsIgnoreCase("cow")
                 && npc.canReach()
                 && !npc.isInCombat()
                 && npc.distance() < 15);
     }
 
     private static ArrayList<GroundItem> getLoot() {
-        var tile = getLootTile();
-        if (tile == null) {
-            return new ArrayList<>();
-        }
-        var items = GroundItems.getForTile(tile);
         var itemsFiltered = new ArrayList<GroundItem>();
-        items.forEach(item -> {
-            var price = LivePrices.get(item.getID());
-            if (item.getName().equalsIgnoreCase("Coins")
-                    || item.getName().equalsIgnoreCase("Bones")
-                    || item.getName().equalsIgnoreCase("Cowhide")
-                    || item.getName().toLowerCase(Locale.ROOT).contains("clue")) {
-                itemsFiltered.add(item);
-                Logger.info("Looted: " + item.getName() + ". Manually included from List");
-                Util.addLoot(item.getName());
-            } else if (price > 1000) {
-                itemsFiltered.add(item);
-                Logger.info("Looted: " + item.getName() + " for :" + price);
-                Util.addLoot(item.getName());
-            } else {
-                Logger.info("ignored: " + item.getName() + " for :" + price);
-                Util.addIgnored(item.getName());
-            }
-        });
+            var items = getGroundItems();
+            items.forEach(item -> {
+                var price = LivePrices.get(item.getID());
+                if (item.getName().equalsIgnoreCase("Coins")
+                        || item.getName().toLowerCase(Locale.ROOT).contains("bones")
+                        || item.getName().toLowerCase(Locale.ROOT).contains("rune")
+                        || item.getName().equalsIgnoreCase("Cowhide")
+                        || item.getName().toLowerCase(Locale.ROOT).contains("clue")) {
+                    itemsFiltered.add(item);
+                    Logger.info("Looted: " + item.getName() + ". Manually included from List");
+                    Util.addLoot(item.getName());
+                } else if (price > 1000) {
+                    itemsFiltered.add(item);
+                    Logger.info("Looted: " + item.getName() + " for :" + price);
+                    Util.addLoot(item.getName());
+                } else {
+                    Logger.info("ignored: " + item.getName() + " for :" + price);
+                    Util.addIgnored(item.getName());
+                }
+            });
         return itemsFiltered;
     }
 
-    private static Tile getLootTile() {
-        var groundItem =  GroundItems.closest(item -> item.distance() < 5
-                        && item.canReach());
-        if (groundItem != null) {
-            return groundItem.getTile();
-        }
-        return null;
+    private static List<GroundItem> getGroundItems() {
+        return GroundItems.all(item -> item.distance() < 5
+                && item.canReach());
+//        if (groundItems != null && !groundItems.isEmpty()) {
+//            var tiles = new ArrayList<Tile>();
+//            groundItems.forEach(groundItem -> tiles.add(groundItem.getTile()));
+//            return tiles;
+//        }
+//        return null;
     }
 }
