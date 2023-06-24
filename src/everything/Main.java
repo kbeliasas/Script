@@ -5,10 +5,7 @@ import everything.naturalmouse.support.DefaultMouseMotionNature;
 import everything.naturalmouse.support.RsMouseInfoAccessor;
 import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
-import everything.skills.Combating;
-import everything.skills.Crafting;
-import everything.skills.RuneCrafting;
-import everything.skills.RuneEssence;
+import everything.skills.*;
 import org.dreambot.api.Client;
 import org.dreambot.api.input.mouse.algorithm.StandardMouseAlgorithm;
 import org.dreambot.api.methods.Calculations;
@@ -37,8 +34,10 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.CRAFTING;
-    public static int goal = 26;
+    public static Skill skillToTrain = Skill.RUNECRAFTING;
+    public static int goal = 0;
+    public static int bankedAmount = 0;
+    public static boolean paintTimeToGoal = true;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -59,7 +58,7 @@ public class Main extends AbstractScript {
 //        Bank.open(BankLocation.FALADOR_EAST);
 //        Bank.open(BankLocation.VARROCK_WEST);
 //        RuneCrafting.craft();
-        Combating.attack();
+        RuneCrafting.craft();
         stateTracker();
         return Calculations.random(1000, 2000);
 
@@ -144,6 +143,23 @@ public class Main extends AbstractScript {
                     message.append(lootCount).append(" ").append(lootName)
                             .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             g.drawString(message.toString(), 5, 95);
+        }
+        if (paintTimeToGoal) {
+            var message = new StringBuilder();
+            message.append("Time to goal: ");
+            looted.forEach((lootName, lootCount) -> {
+                var itemsPerSecond = duration / lootCount;
+//                message.append("Items per Second: ").append(itemsPerSecond);
+                var timeLeft = itemsPerSecond * (Main.goal);
+//                message.append(" timeLeft: ").append(timeLeft);
+                message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
+            });
+            g.drawString(message.toString(), 5, 115);
+
+//            var bankedMessage = new StringBuilder();
+//            bankedMessage.append("Banked amount: ");
+//            bankedMessage.append(bankedAmount);
+//            g.drawString(bankedMessage.toString(), 5, 135);
         }
     }
 

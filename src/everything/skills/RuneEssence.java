@@ -44,11 +44,13 @@ public class RuneEssence {
                     Util.addLoot(essence.getName(), amount);
                     Bank.depositAllItems();
                     Main.state = States.IDLE;
-                    if (Bank.count(item ->
-                            item.getName().toLowerCase(Locale.ROOT).contains("essence")) >= Main.goal) {
+                    var bankedAmount = Bank.count(item ->
+                            item.getName().toLowerCase(Locale.ROOT).contains("essence"));
+                    if (bankedAmount >= Main.goal) {
                         Main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
+                    Main.bankedAmount = bankedAmount;
                 }
 
             }

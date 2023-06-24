@@ -19,6 +19,7 @@ public class RuneCrafting {
 
     static Area AIR_ALTAR = new Area(2982, 3296, 2986, 3293);
     static Area MIND_ALTAR = new Area(2978, 3516, 2986, 3511);
+    static Area BODY_ALTAR = new Area(3050, 3446, 3054, 3439);
 
     public static void craft() {
 
@@ -28,7 +29,7 @@ public class RuneCrafting {
         }
 
         if (Main.state.equals(States.IDLE)) {
-            Walking.walk(MIND_ALTAR.getRandomTile());
+            Walking.walk(BODY_ALTAR.getRandomTile());
             var ruins = GameObjects.closest("Mysterious ruins");
             if (ruins != null && ruins.canReach() && ruins.distance() < 10) {
                 ruins.interact("Enter");
@@ -64,6 +65,8 @@ public class RuneCrafting {
                         ScriptManager.getScriptManager().stop();
                     }
                     Main.state = States.IDLE;
+                    Main.goal = Bank.count(item ->
+                            item.getName().toLowerCase(Locale.ROOT).contains("essence"));
                 }
             }
 
