@@ -7,18 +7,15 @@ import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
 import everything.skills.*;
 import org.dreambot.api.Client;
-import org.dreambot.api.input.mouse.algorithm.StandardMouseAlgorithm;
 import org.dreambot.api.methods.Calculations;
-import org.dreambot.api.methods.container.impl.bank.Bank;
-import org.dreambot.api.methods.container.impl.bank.BankLocation;
 import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.SkillTracker;
+import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.api.utilities.Logger;
-import org.dreambot.api.utilities.Sleep;
 
 import java.awt.*;
 import java.time.Instant;
@@ -34,10 +31,12 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.RUNECRAFTING;
-    public static int goal = 0;
+    public static Skill skillToTrain = Skill.FISHING;
+    public static int goal = 35;
+    public static int goalXp = 22406;
     public static int bankedAmount = 0;
-    public static boolean paintTimeToGoal = true;
+    public static boolean paintTimeToGoalItems = false;
+    public static boolean paintTimeToGoalLevels = true;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -54,68 +53,15 @@ public class Main extends AbstractScript {
 
     @Override
     public int onLoop() {
-
 //        Bank.open(BankLocation.FALADOR_EAST);
-//        Bank.open(BankLocation.VARROCK_WEST);
-//        RuneCrafting.craft();
-        RuneCrafting.craft();
+        Fishing.fish();
         stateTracker();
         return Calculations.random(1000, 2000);
-
-//        if (Skills.getRealLevel(Skill.MAGIC) >= 17 || Inventory.count("Mind rune") <= 25) {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                Logger.error("Something wrong with thread sleep", e);
-//                throw new RuntimeException(e);
-//            }
-//            Logger.log("Target level reached!");
-//            ScriptManager.getScriptManager().stop();
-//        }
-
-//        if (!Players.getLocal().isAnimating()) {
-//
-//            if (state.equals(States.BANKING)) {
-//                Banking.putAllItems();
-//            }
-//            if (Inventory.isFull()) {
-////                var portal = GameObjects.closest("Portal");
-////                if (portal != null && portal.canReach()) {
-////                    portal.interact("Exit");
-////                    portal.interact("Use");
-////                    if (Main.state.equals(States.BANKING)) {
-////                        Walking.walk(portal.getTile());
-////                        Logger.warn("Something wrong with teleport: " + portal);
-////                        Logger.warn(portal.getActions());
-////                    }
-////                }
-//                state = States.PRAYER;
-////                Banking.putAllItems();
-//            }
-
-//            if (!Inventory.contains("Raw anchovies")) {
-//                Logger.log("Inventory is full");
-//                Inventory.dropAll("Burnt fish");
-
-//            RuneCrafting.craft();
-//            RuneEssence.mine();
-//            everyting.skills.Cooking.cook();
-//            everyting.Fishing.fish();
-
-//            Bank.open(BankLocation.FALADOR_EAST);
-//            Bank.open(BankLocation.VARROCK_WEST);
-//            GrandExchange.open();
-//            if (state.equals(States.PRAYER)) {
-//                Prayering.buryBones();
-//            } else {
-//                Combating.attack();
-//            }
-//        }
-
     }
 
     @Override
     public void onPaint(Graphics2D g) {
+        var y = 15;
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
@@ -126,15 +72,15 @@ public class Main extends AbstractScript {
                         TimeUnit.MILLISECONDS.toHours(timeToLvl),
                         TimeUnit.MILLISECONDS.toMinutes(timeToLvl),
                         (TimeUnit.MILLISECONDS.toSeconds(timeToLvl)) % 60));
-        g.drawString(timeRunning, 5, 35);
-        g.drawString(levels, 5, 55);
+        g.drawString(timeRunning, 5, y += 20);
+        g.drawString(levels, 5, y += 20);
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
             message.append("Looted: ");
             looted.forEach((lootName, lootCount) ->
                     message.append(lootCount).append(" ").append(lootName)
                             .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
-            g.drawString(message.toString(), 5, 75);
+            g.drawString(message.toString(), 5, y += 20);
         }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
@@ -142,9 +88,9 @@ public class Main extends AbstractScript {
             ignored.forEach((lootName, lootCount) ->
                     message.append(lootCount).append(" ").append(lootName)
                             .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
-            g.drawString(message.toString(), 5, 95);
+            g.drawString(message.toString(), 5, y += 20);
         }
-        if (paintTimeToGoal) {
+        if (paintTimeToGoalItems) {
             var message = new StringBuilder();
             message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
@@ -154,12 +100,30 @@ public class Main extends AbstractScript {
 //                message.append(" timeLeft: ").append(timeLeft);
                 message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
-            g.drawString(message.toString(), 5, 115);
+            g.drawString(message.toString(), 5, y += 20);
 
 //            var bankedMessage = new StringBuilder();
 //            bankedMessage.append("Banked amount: ");
 //            bankedMessage.append(bankedAmount);
-//            g.drawString(bankedMessage.toString(), 5, 135);
+//            g.drawString(bankedMessage.toString(), 5, y += 20);
+        }
+
+        if (paintTimeToGoalLevels) {
+            var message = new StringBuilder();
+            message.append("Time to goal: ");
+            var xpPerHour = SkillTracker.getGainedExperiencePerHour(skillToTrain);
+            if (xpPerHour > 0) {
+                var xpPerSecond = xpPerHour / (60 * 60);
+                var xpLeft = goalXp - Skills.getExperience(skillToTrain);
+                var timeLeft = xpLeft / xpPerSecond;
+                if (xpLeft > 0) {
+                    message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
+                }
+                g.drawString(message.toString(), 5, y += 20);
+            }
+
+            String bankedMessage = "Banked amount: " + bankedAmount;
+            g.drawString(bankedMessage, 5, y += 20);
         }
     }
 
