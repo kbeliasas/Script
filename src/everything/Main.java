@@ -31,11 +31,12 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.COOKING;
+    public static Skill skillToTrain = Skill.SMITHING;
     public static int goal = 0;
-    public static int goalXp = 22406;
+    public static int goalXp = 18247;
     public static int bankedAmount = 0;
     public static boolean paintTimeToGoalItems = true;
+    public static boolean paintTimeToGoalItemsCollect = false;
     public static boolean paintTimeToGoalLevels = false;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
@@ -54,7 +55,7 @@ public class Main extends AbstractScript {
     @Override
     public int onLoop() {
 //        Bank.open(BankLocation.FALADOR_EAST);
-        Cooking.cook();
+        Smithing.smith();
         stateTracker();
         return Calculations.random(1000, 2000);
     }
@@ -95,17 +96,25 @@ public class Main extends AbstractScript {
             message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
                 var itemsPerSecond = duration / lootCount;
-//                message.append("Items per Second: ").append(itemsPerSecond);
                 var timeLeft = itemsPerSecond * (Main.goal);
-//                message.append(" timeLeft: ").append(timeLeft);
+                message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
+            });
+            g.drawString(message.toString(), 5, y += 20);
+        }
+
+        if (paintTimeToGoalItemsCollect) {
+            var message = new StringBuilder();
+            message.append("Time to goal: ");
+            looted.forEach((lootName, lootCount) -> {
+                var itemsPerSecond = duration / lootCount;
+                var timeLeft = itemsPerSecond * (goal - bankedAmount);
                 message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
             g.drawString(message.toString(), 5, y += 20);
 
-//            var bankedMessage = new StringBuilder();
-//            bankedMessage.append("Banked amount: ");
-//            bankedMessage.append(bankedAmount);
-//            g.drawString(bankedMessage.toString(), 5, y += 20);
+            String bankedMessage = "Banked amount: " +
+                    bankedAmount;
+            g.drawString(bankedMessage, 5, y += 20);
         }
 
         if (paintTimeToGoalLevels) {
