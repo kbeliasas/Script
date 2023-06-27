@@ -12,6 +12,7 @@ import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.SkillTracker;
 import org.dreambot.api.methods.skills.Skills;
+import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
@@ -31,9 +32,9 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.SMITHING;
-    public static int goal = 0;
-    public static int goalXp = 18247;
+    public static Skill skillToTrain = Skill.CRAFTING;
+    public static int goal = 132;
+    public static int goalXp = 22406;
     public static int bankedAmount = 0;
     public static boolean paintTimeToGoalItems = true;
     public static boolean paintTimeToGoalItemsCollect = false;
@@ -55,8 +56,9 @@ public class Main extends AbstractScript {
     @Override
     public int onLoop() {
 //        Bank.open(BankLocation.FALADOR_EAST);
-        Smithing.smith();
+        Smithing.smeltTiara();
         stateTracker();
+//        turnOnRun();
         return Calculations.random(1000, 2000);
     }
 
@@ -71,7 +73,7 @@ public class Main extends AbstractScript {
                 SkillTracker.getGainedLevels(skillToTrain),
                 String.format("%d:%02d:%02d",
                         TimeUnit.MILLISECONDS.toHours(timeToLvl),
-                        TimeUnit.MILLISECONDS.toMinutes(timeToLvl),
+                        (TimeUnit.MILLISECONDS.toMinutes(timeToLvl)) % 60,
                         (TimeUnit.MILLISECONDS.toSeconds(timeToLvl)) % 60));
         g.drawString(timeRunning, 5, y += 20);
         g.drawString(levels, 5, y += 20);
@@ -159,6 +161,14 @@ public class Main extends AbstractScript {
         if (!state.equals(cashedState)) {
             Logger.info("Stated changed from " + cashedState.name() + " to " + state.name());
             cashedState = state;
+        }
+    }
+
+    private void turnOnRun() {
+        if (!Walking.isRunEnabled()) {
+            if (Walking.getRunEnergy() >= 35) {
+                Walking.toggleRun();
+            }
         }
     }
 }

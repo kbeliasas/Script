@@ -26,9 +26,10 @@ public class Smithing {
 
     static Area FURNACE = new Area(3105, 3501, 3109, 3496);
     static Area ANVIL = new Area(3185, 3427, 3190, 3420);
-    static String ORE = "iron ore";
-    static String BAR = "iron bar";
+    static String ORE = "silver ore";
+    static String BAR = "silver bar";
     static String PRODUCT = "platebody";
+    static int ORES_PER_BAR = 1;
 
     public static void smelt() {
         if (!Players.getLocal().isAnimating()) {
@@ -50,7 +51,7 @@ public class Smithing {
                     Bank.withdrawAll(ORE);
 //                    Bank.withdraw(ore -> ore.getName().toLowerCase(Locale.ROOT).contains(ORE), 14);
                     Sleep.sleep(Calculations.random(500, 1000));
-                    Main.goal = Bank.count(ore -> ore.getName().toLowerCase(Locale.ROOT).contains(ORE)) / 2;
+                    Main.goal = Bank.count(ore -> ore.getName().toLowerCase(Locale.ROOT).contains(ORE)) / ORES_PER_BAR;
                     Main.state = States.IDLE;
                 }
             }
@@ -62,7 +63,7 @@ public class Smithing {
                     Main.state = States.SMITHING;
                     if (furnace.interact("Smelt")) {
                         Sleep.sleep(Calculations.random(1500, 1800));
-                        Keyboard.typeSpecialKey(32);
+                        Keyboard.typeSpecialKey(32); //org.dreambot.api.input.Keyboard
                     }
                 }
             }
@@ -83,30 +84,23 @@ public class Smithing {
         if (!Players.getLocal().isAnimating()) {
             if (!Inventory.contains(BAR)) {
                 if (Banking.openBank()) {
+                    var tiaras = Inventory.get(tiara ->
+                            tiara.getName().toLowerCase(Locale.ROOT).contains("tiara")
+                                    && !tiara.getName().toLowerCase(Locale.ROOT).contains("mould"));
+                    if (tiaras != null) {
+                        var amount = Inventory.count(tiaras.getID());
+                        Util.addLoot(tiaras.getName(), amount);
+                    }
                     Bank.depositAllExcept("Tiara mould");
                     Sleep.sleep(Calculations.random(500, 800));
                     if (!Bank.contains(BAR)) {
                         Logger.log("Goal reached");
+                        Main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
+                    Main.goal = Bank.count(bar -> bar.getName().toLowerCase(Locale.ROOT).contains(BAR));
                     Bank.withdrawAll(BAR);
                     Main.state = States.IDLE;
-                }
-            }
-
-            if (Main.state.equals(States.IDLE)) {
-                Walking.walk(FURNACE.getRandomTile());
-                var furnace = getClosestFurnace();
-                if (furnace != null) {
-                    Main.state = States.SMITHING;
-                    if (furnace.interact("Smelt")) {
-                        Sleep.sleep(Calculations.random(1500, 1800));
-                        var widget = Widgets.get(6, 28, 3);
-                        if (widget != null) {
-                            widget.interact();
-                        }
-//                        Keyboard.typeSpecialKey(32);
-                    }
                 }
             }
 
@@ -129,6 +123,22 @@ public class Smithing {
                         furnace.interact("Smelt");
                         Sleep.sleep(Calculations.random(1500, 1800));
                         widget.interact();
+                    }
+                }
+            }
+
+            if (Main.state.equals(States.IDLE)) {
+                Walking.walk(FURNACE.getRandomTile());
+                var furnace = getClosestFurnace();
+                if (furnace != null) {
+                    Main.state = States.SMITHING;
+                    if (furnace.interact("Smelt")) {
+                        Sleep.sleep(Calculations.random(1500, 1800));
+                        var widget = Widgets.get(6, 28, 3);
+                        if (widget != null) {
+                            widget.interact();
+                        }
+//                        Keyboard.typeSpecialKey(32);
                     }
                 }
             }

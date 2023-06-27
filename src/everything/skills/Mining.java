@@ -25,7 +25,7 @@ public class Mining {
     static String COPPER_NAME = "Copper rocks";
     static String IRON_NAME = "Iron rocks";
     static String SILVER_NAME = "Silver rocks";
-    static String ORE = "iron ore";
+    static String ORE = "silver ore";
 
     public static void mine() {
 
@@ -38,6 +38,13 @@ public class Mining {
                     if (ore != null) {
                         var amount = Inventory.count(ore.getID());
                         Util.addLoot(ore.getName(), amount);
+                    }
+                    var gems = Inventory.get(gem ->
+                            gem.getName().toLowerCase(Locale.ROOT).contains("uncut")
+                    );
+                    if (gems != null) {
+                        var amount = Inventory.count(gems.getID());
+                        Util.addLoot(gems.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
@@ -54,7 +61,7 @@ public class Mining {
             }
 
             if (Main.state.equals(States.IDLE)) {
-                Walking.walk(SOUTH_EAST_VARROCK_MINE.getRandomTile());
+                Walking.walk(AL_KHARID_MINE.getRandomTile());
                 var ore = getClosest();
                 if (ore != null) {
                     Main.state = States.MINING;
@@ -77,7 +84,7 @@ public class Mining {
 
     private static GameObject getClosest() {
         return GameObjects.closest(object ->
-                object.getName().equalsIgnoreCase(IRON_NAME)
+                object.getName().equalsIgnoreCase(SILVER_NAME)
                         && object.hasAction("Mine")
                         && object.distance() <= 20
                         && object.getModelColors() != null
