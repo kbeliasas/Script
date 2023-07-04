@@ -3,6 +3,7 @@ package everything.skills;
 import everything.Main;
 import everything.States;
 import everything.Util;
+import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
 import org.dreambot.api.methods.interactive.GameObjects;
@@ -12,6 +13,7 @@ import org.dreambot.api.methods.map.Area;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.ScriptManager;
 import org.dreambot.api.utilities.Logger;
+import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.wrappers.interactive.GameObject;
 import org.dreambot.api.wrappers.interactive.NPC;
 
@@ -44,6 +46,7 @@ public class RuneEssence {
                     Util.addLoot(essence.getName(), amount);
                     Bank.depositAllItems();
                     Main.state = States.IDLE;
+                    Sleep.sleep(Calculations.random(500,1000));
                     var bankedAmount = Bank.count(item ->
                             item.getName().toLowerCase(Locale.ROOT).contains("essence"));
                     if (bankedAmount >= Main.goal) {

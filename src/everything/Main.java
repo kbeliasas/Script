@@ -32,13 +32,13 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.CRAFTING;
-    public static int goal = 132;
-    public static int goalXp = 22406;
+    public static Skill skillToTrain = Skill.COOKING;
+    public static int goal = 40;
+    public static int goalXp = 37224; //40
     public static int bankedAmount = 0;
-    public static boolean paintTimeToGoalItems = true;
+    public static boolean paintTimeToGoalItems = false;
     public static boolean paintTimeToGoalItemsCollect = false;
-    public static boolean paintTimeToGoalLevels = false;
+    public static boolean paintTimeToGoalLevels = true;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -56,9 +56,9 @@ public class Main extends AbstractScript {
     @Override
     public int onLoop() {
 //        Bank.open(BankLocation.FALADOR_EAST);
-        Smithing.smeltTiara();
+        Cooking.cook();
         stateTracker();
-//        turnOnRun();
+        turnOnRun();
         return Calculations.random(1000, 2000);
     }
 

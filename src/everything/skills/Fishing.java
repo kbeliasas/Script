@@ -54,6 +54,7 @@ public class Fishing {
                     var amount = Inventory.count(fish.getID());
                     Util.addLoot(fish.getName(), amount);
                     Bank.depositAllExcept("Fly fishing rod", "Feather");
+                    Sleep.sleep(Calculations.random(500, 1000));
                     Main.bankedAmount = Bank.count(item ->
                             item.getName().toLowerCase(Locale.ROOT).contains(FISH));
                     Main.state = States.IDLE;
