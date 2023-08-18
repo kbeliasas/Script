@@ -7,6 +7,7 @@ import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
 import everything.skills.*;
 import org.dreambot.api.Client;
+import org.dreambot.api.input.Mouse;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
@@ -32,13 +33,13 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.COOKING;
-    public static int goal = 40;
-    public static int goalXp = 37224; //40
+    public static Skill skillToTrain = Skill.WOODCUTTING;
+    public static int goal = 60;
+    public static int goalXp = 50339; //43
     public static int bankedAmount = 0;
     public static boolean paintTimeToGoalItems = false;
-    public static boolean paintTimeToGoalItemsCollect = false;
-    public static boolean paintTimeToGoalLevels = true;
+    public static boolean paintTimeToGoalItemsCollect = true;
+    public static boolean paintTimeToGoalLevels = false;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
 
@@ -48,6 +49,7 @@ public class Main extends AbstractScript {
         Logger.info("Welcome");
         var nature = new DefaultMouseMotionNature(new RsSystemCalls(), new RsMouseInfoAccessor());
         mouseMotionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
+//        Mouse.setMouseAlgorithm(new NaturalMouse());
         Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
         SkillTracker.start(skillToTrain);
         startTime = Instant.now();
@@ -56,7 +58,7 @@ public class Main extends AbstractScript {
     @Override
     public int onLoop() {
 //        Bank.open(BankLocation.FALADOR_EAST);
-        Cooking.cook();
+        Woodcutting.cut();
         stateTracker();
         turnOnRun();
         return Calculations.random(1000, 2000);
@@ -68,8 +70,9 @@ public class Main extends AbstractScript {
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
-        var levels = String.format("Skill %s. Levels gained: %s. Time to next level: %s",
+        var levels = String.format("Skill %s. Current: %s. Levels gained: %s. Time to next level: %s",
                 skillToTrain.getName(),
+                Skills.getRealLevel(skillToTrain),
                 SkillTracker.getGainedLevels(skillToTrain),
                 String.format("%d:%02d:%02d",
                         TimeUnit.MILLISECONDS.toHours(timeToLvl),

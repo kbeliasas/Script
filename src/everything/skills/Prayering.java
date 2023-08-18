@@ -10,7 +10,7 @@ import java.util.Locale;
 public class Prayering {
 
     public static void buryBones() {
-        if (Inventory.contains("Bones", "Big bones")) {
+        if (Inventory.contains(bones -> bones.getName().toLowerCase(Locale.ROOT).contains("bones"))) {
             var bone = Inventory.get(bones -> bones.getName().toLowerCase(Locale.ROOT).contains("bones"));
             bone.interact();
         } else {

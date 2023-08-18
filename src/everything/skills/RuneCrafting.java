@@ -10,8 +10,8 @@ import org.dreambot.api.methods.interactive.GameObjects;
 import org.dreambot.api.methods.map.Area;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.ScriptManager;
-import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
+import org.dreambot.api.wrappers.interactive.GameObject;
 
 import java.util.Locale;
 
@@ -20,6 +20,7 @@ public class RuneCrafting {
     static Area AIR_ALTAR = new Area(2982, 3296, 2986, 3293);
     static Area MIND_ALTAR = new Area(2978, 3516, 2986, 3511);
     static Area BODY_ALTAR = new Area(3050, 3446, 3054, 3439);
+    private static final int RUNES_PER_ESSENCE = 4;
 
     public static void craft() {
 
@@ -29,14 +30,12 @@ public class RuneCrafting {
         }
 
         if (Main.state.equals(States.IDLE)) {
-            Walking.walk(BODY_ALTAR.getRandomTile());
-            var ruins = GameObjects.closest("Mysterious ruins");
-            if (ruins != null && ruins.canReach() && ruins.distance() < 10) {
-                ruins.interact("Enter");
+            Walking.walk(AIR_ALTAR.getRandomTile());
+            var ruins = ruins();
+            if (ruins != null && ruins.interact("Enter")) {
+//                ruins.interact("Enter");
                 Sleep.sleep(Calculations.random(1000, 2000));
                 Main.state = States.RUNECRAFTING;
-            } else {
-                Logger.error("Something wrong ruins: " + ruins);
             }
         }
 
@@ -66,7 +65,7 @@ public class RuneCrafting {
                     }
                     Main.state = States.IDLE;
                     Main.goal = Bank.count(item ->
-                            item.getName().toLowerCase(Locale.ROOT).contains("essence"));
+                            item.getName().toLowerCase(Locale.ROOT).contains("essence")) * RUNES_PER_ESSENCE;
                 }
             }
 
@@ -81,9 +80,14 @@ public class RuneCrafting {
 //                } catch (InterruptedException e) {
 //                    Logger.error("Interupted", e);
 //                }
-                Sleep.sleep(Calculations.random(5000, 6000));
+                Sleep.sleep(Calculations.random(4000, 5000));
                 Main.state = States.BANKING;
             }
         }
+    }
+
+    private static GameObject ruins() {
+        return GameObjects.closest(altar -> altar.getName().toLowerCase(Locale.ROOT).contains("mysterious ruins")
+        && altar.distance() < 8 && altar.canReach());
     }
 }

@@ -21,19 +21,20 @@ import java.util.Locale;
 
 public class Woodcutting {
 
+    static Area TREE_AREA = new Area(3153, 3464, 3181, 3450);
     static Area OAK = new Area(3167, 3426, 3172, 3416);
     static Area WILLOW = new Area(3084, 3238, 3092, 3229);
-    static String TREE = "willow";
+    static String TREE = "oak";
 
 
     public static void cut() {
         if (!Players.getLocal().isAnimating()) {
 
-            if (Skills.getRealLevel(Skill.WOODCUTTING) >= Main.goal) {
-                Logger.log("Target level reached!");
-                Main.printResults();
-                ScriptManager.getScriptManager().stop();
-            }
+//            if (Skills.getRealLevel(Skill.WOODCUTTING) >= Main.goal) {
+//                Logger.log("Target level reached!");
+//                Main.printResults();
+//                ScriptManager.getScriptManager().stop();
+//            }
 
             if (Inventory.isFull()) {
                 Main.state = States.BANKING;
@@ -47,11 +48,16 @@ public class Woodcutting {
                     Sleep.sleep(Calculations.random(500, 1000));
                     Main.bankedAmount = Bank.count(item ->
                             item.getName().toLowerCase(Locale.ROOT).contains(TREE));
+                    if (Main.bankedAmount >= Main.goal) {
+                        Main.printResults();
+                        Bank.close();
+                        ScriptManager.getScriptManager().stop();
+                    }
                 }
             }
 
             if (Main.state.equals(States.IDLE)) {
-                Walking.walk(WILLOW.getRandomTile());
+                Walking.walk(OAK.getRandomTile());
                 var tree = getCloset();
                 if (tree != null) {
                     Main.state = States.WOODCUTTING;

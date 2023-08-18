@@ -6,6 +6,7 @@ import everything.Util;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
+import org.dreambot.api.methods.dialogues.Dialogues;
 import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.interactive.NPCs;
 import org.dreambot.api.methods.interactive.Players;
@@ -43,8 +44,11 @@ public class Combating {
 
             if (Players.getLocal().isInCombat() && !noMoreFood) {
                 Main.state = States.COMBATING;
-                if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 15) {
+                if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 18) {
                     Inventory.interact(food -> food.getName().toLowerCase(Locale.ROOT).contains(FOOD));
+                    if (noMoreFood && Inventory.count(food -> food.getName().toLowerCase(Locale.ROOT).contains(FOOD)) < 1) {
+                        Main.state = States.BANKING;
+                    }
                 }
                 return;
             }
@@ -61,7 +65,7 @@ public class Combating {
                 }
             }
 
-            if (Inventory.isFull()) {
+            if (Inventory.contains(bones -> bones.getName().toLowerCase(Locale.ROOT).contains("bones"))) {
                 Main.state = States.PRAYER;
             }
 
@@ -128,12 +132,15 @@ public class Combating {
                 if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 15) {
                     Inventory.interact(food -> food.getName().toLowerCase(Locale.ROOT).contains(FOOD));
                 }
+                if (Dialogues.inDialogue()) {
+                    Dialogues.continueDialogue();
+                }
                 return;
             }
 
             if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal
                     || finishGame
-                    || Inventory.count(rune -> rune.getName().toLowerCase(Locale.ROOT).contains("mind")) <= 30) {
+                    || Inventory.count(rune -> rune.getName().toLowerCase(Locale.ROOT).contains("rune")) <= 30) {
                 Logger.log("Target level reached!");
                 if (Banking.openBank()) {
                     Bank.depositAllItems();
@@ -166,7 +173,7 @@ public class Combating {
             if (Main.state.equals(States.BANKING)) {
                 if (Banking.openBank()) {
                     Bank.depositAllExcept(item -> item.getName().toLowerCase(Locale.ROOT).contains(FOOD)
-                            || item.getName().toLowerCase(Locale.ROOT).contains("mind"));
+                            || item.getName().toLowerCase(Locale.ROOT).contains("rune"));
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD);
                     Bank.withdraw(FOOD, needMore);
                     if (Bank.count(FOOD) <= FOOD_AMOUNT) {
@@ -198,8 +205,11 @@ public class Combating {
                 var npc = getMob();
                 if (npc != null) {
                     npc.interact("Attack");
-                } else
-                    Walking.walk(LESSER_DEMON.getRandomTile());
+                } else {
+                    if (!LESSER_DEMON.contains(Players.getLocal().getTile())) {
+                        Walking.walk(LESSER_DEMON.getRandomTile());
+                    }
+                }
             }
         }
     }
@@ -209,7 +219,7 @@ public class Combating {
         return NPCs.closest(npc -> npc.getName().toLowerCase(Locale.ROOT).contains("demon")
 //                && npc.canReach()
 //                && !npc.isInCombat()
-                && npc.distance() < 5);
+                && npc.distance() < 10);
     }
 
     private static ArrayList<GroundItem> getLoot() {
