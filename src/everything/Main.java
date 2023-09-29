@@ -5,9 +5,9 @@ import everything.naturalmouse.support.DefaultMouseMotionNature;
 import everything.naturalmouse.support.RsMouseInfoAccessor;
 import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
-import everything.skills.*;
+import everything.skills.SkillEverything;
+import everything.skills.SkillFactory;
 import org.dreambot.api.Client;
-import org.dreambot.api.input.Mouse;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
@@ -19,6 +19,7 @@ import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.api.utilities.Logger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
 import java.util.HashMap;
@@ -37,11 +38,10 @@ public class Main extends AbstractScript {
     public static int goal = 60;
     public static int goalXp = 50339; //43
     public static int bankedAmount = 0;
-    public static boolean paintTimeToGoalItems = false;
-    public static boolean paintTimeToGoalItemsCollect = true;
-    public static boolean paintTimeToGoalLevels = false;
     private static States cashedState = States.IDLE;
     private static Instant startTime;
+    private SkillEverything skillEverything;
+    private Config config;
 
     @Override
 
@@ -53,12 +53,15 @@ public class Main extends AbstractScript {
         Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
         SkillTracker.start(skillToTrain);
         startTime = Instant.now();
+        var skillFactory = new SkillFactory();
+        SwingUtilities.invokeLater(GUI::new);
+        skillEverything = skillFactory.getSkill(skillToTrain);
+        config = skillFactory.setConfig(skillToTrain);
     }
 
     @Override
     public int onLoop() {
-//        Bank.open(BankLocation.FALADOR_EAST);
-        Woodcutting.cut();
+        skillEverything.execute();
         stateTracker();
         turnOnRun();
         return Calculations.random(1000, 2000);
@@ -96,7 +99,7 @@ public class Main extends AbstractScript {
                             .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             g.drawString(message.toString(), 5, y += 20);
         }
-        if (paintTimeToGoalItems) {
+        if (config.isPaintTimeToGoalItems()) {
             var message = new StringBuilder();
             message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
@@ -107,7 +110,7 @@ public class Main extends AbstractScript {
             g.drawString(message.toString(), 5, y += 20);
         }
 
-        if (paintTimeToGoalItemsCollect) {
+        if (config.isPaintTimeToGoalItemsCollect()) {
             var message = new StringBuilder();
             message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
@@ -122,7 +125,7 @@ public class Main extends AbstractScript {
             g.drawString(bankedMessage, 5, y += 20);
         }
 
-        if (paintTimeToGoalLevels) {
+        if (config.isPaintTimeToGoalLevels()) {
             var message = new StringBuilder();
             message.append("Time to goal: ");
             var xpPerHour = SkillTracker.getGainedExperiencePerHour(skillToTrain);
