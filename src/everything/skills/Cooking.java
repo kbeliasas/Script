@@ -21,8 +21,8 @@ public class Cooking {
 
     private static final Area FALADOR_COOKING = new Area(3037, 3364, 3040, 3362);
     private static final Area EDGEVILLE_COOKING = new Area(3077, 3495, 3080, 3489);
-    private static final String FISH_RAW = "raw salmon";
-    private static final String FISH = "salmon";
+    private static final String FISH_RAW = "raw lobster";
+    private static final String FISH = "lobster";
 
     public static void cook() {
         if (!Players.getLocal().isAnimating()) {

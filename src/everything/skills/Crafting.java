@@ -71,7 +71,7 @@ public class Crafting {
     public static void makeLeatherArmor() {
         if (!Players.getLocal().isAnimating()) {
 
-            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal) {
+            if (Skills.getRealLevel(Skill.CRAFTING) >= Main.goal) {
                 Logger.info("Goal reached");
                 ScriptManager.getScriptManager().stop();
             }

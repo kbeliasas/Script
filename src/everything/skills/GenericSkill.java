@@ -1,5 +1,5 @@
 package everything.skills;
 
-public interface SkillEverything {
+public interface GenericSkill {
     void execute();
 }

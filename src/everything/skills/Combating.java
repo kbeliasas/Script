@@ -33,8 +33,8 @@ public class Combating {
     private static final Area LUMBRIDGE_SWAMP = new Area(3158, 3193, 3230, 3168);
     private static final Area HILL_GIANTS_EDGEVILLE = new Area(3110, 9847, 3120, 9834);
 
-    public static final String FOOD = "trout";
-    public static final int FOOD_AMOUNT = 4;
+    public static final String FOOD = "salmon";
+    public static final int FOOD_AMOUNT = 8;
     private static boolean finishGame = false;
     private static boolean noMoreFood = false;
 
@@ -44,7 +44,7 @@ public class Combating {
 
             if (Players.getLocal().isInCombat() && !noMoreFood) {
                 Main.state = States.COMBATING;
-                if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 18) {
+                if (Skills.getBoostedLevel(Skill.HITPOINTS) <= 25) {
                     Inventory.interact(food -> food.getName().toLowerCase(Locale.ROOT).contains(FOOD));
                     if (noMoreFood && Inventory.count(food -> food.getName().toLowerCase(Locale.ROOT).contains(FOOD)) < 1) {
                         Main.state = States.BANKING;
@@ -53,7 +53,7 @@ public class Combating {
                 return;
             }
 
-            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal || finishGame) {
+            if (Skills.getExperience(Skill.ATTACK) >= Main.goalXp || finishGame) {
                 Logger.log("Target level reached!");
                 if (Banking.openBank()) {
                     Bank.depositAllItems();
@@ -138,7 +138,7 @@ public class Combating {
                 return;
             }
 
-            if (Skills.getRealLevel(Main.skillToTrain) >= Main.goal
+            if (Skills.getRealLevel(Skill.ATTACK) >= Main.goal
                     || finishGame
                     || Inventory.count(rune -> rune.getName().toLowerCase(Locale.ROOT).contains("rune")) <= 30) {
                 Logger.log("Target level reached!");
@@ -202,7 +202,7 @@ public class Combating {
                 });
             } else {
                 Logger.log("Finding npc");
-                var npc = getMob();
+                var npc = getMobMagic();
                 if (npc != null) {
                     npc.interact("Attack");
                 } else {
@@ -215,10 +215,17 @@ public class Combating {
     }
 
 
-    private static NPC getMob() {
+    private static NPC getMobMagic() {
         return NPCs.closest(npc -> npc.getName().toLowerCase(Locale.ROOT).contains("demon")
 //                && npc.canReach()
 //                && !npc.isInCombat()
+                && npc.distance() < 10);
+    }
+
+    private static NPC getMob() {
+        return NPCs.closest(npc -> npc.getName().toLowerCase(Locale.ROOT).contains("giant")
+                && npc.canReach()
+                && !npc.isInCombat()
                 && npc.distance() < 10);
     }
 

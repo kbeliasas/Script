@@ -5,8 +5,7 @@ import everything.naturalmouse.support.DefaultMouseMotionNature;
 import everything.naturalmouse.support.RsMouseInfoAccessor;
 import everything.naturalmouse.support.RsSystemCalls;
 import everything.naturalmouse.util.FactoryTemplates;
-import everything.skills.SkillEverything;
-import everything.skills.SkillFactory;
+import everything.skills.GenericSkill;
 import org.dreambot.api.Client;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.grandexchange.LivePrices;
@@ -34,47 +33,51 @@ public class Main extends AbstractScript {
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
-    public static Skill skillToTrain = Skill.WOODCUTTING;
-    public static int goal = 60;
-    public static int goalXp = 50339; //43
+    private Skill skillToTrain;
+    public static int goal = 158;
+    public static int goalXp = 100000; //49
     public static int bankedAmount = 0;
     private static States cashedState = States.IDLE;
-    private static Instant startTime;
-    private SkillEverything skillEverything;
+    private Instant startTime;
+    private GenericSkill genericSkill;
     private Config config;
+    private boolean start = false;
+    private String stateString = "None";
 
     @Override
-
     public void onStart() {
         Logger.info("Welcome");
         var nature = new DefaultMouseMotionNature(new RsSystemCalls(), new RsMouseInfoAccessor());
         mouseMotionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
 //        Mouse.setMouseAlgorithm(new NaturalMouse());
         Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
-        SkillTracker.start(skillToTrain);
         startTime = Instant.now();
-        var skillFactory = new SkillFactory();
-        SwingUtilities.invokeLater(GUI::new);
-        skillEverything = skillFactory.getSkill(skillToTrain);
-        config = skillFactory.setConfig(skillToTrain);
+        SwingUtilities.invokeLater(() -> new GUI(this));
     }
 
     @Override
     public int onLoop() {
-        skillEverything.execute();
-        stateTracker();
-        turnOnRun();
+        if (!start) {
+            return Calculations.random(1000, 2000);
+        }
+        genericSkill.execute();
+//        stateTracker();
+//        turnOnRun();
         return Calculations.random(1000, 2000);
     }
 
     @Override
     public void onPaint(Graphics2D g) {
+        if (!start) {
+            return;
+        }
         var y = 15;
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
-        var levels = String.format("Skill %s. Current: %s. Levels gained: %s. Time to next level: %s",
+        var levels = String.format("Skill %s. Current XP: %s K. Current: %s. Levels gained: %s. Time to next level: %s",
                 skillToTrain.getName(),
+                Skills.getExperience(skillToTrain) / 1000,
                 Skills.getRealLevel(skillToTrain),
                 SkillTracker.getGainedLevels(skillToTrain),
                 String.format("%d:%02d:%02d",
@@ -83,6 +86,8 @@ public class Main extends AbstractScript {
                         (TimeUnit.MILLISECONDS.toSeconds(timeToLvl)) % 60));
         g.drawString(timeRunning, 5, y += 20);
         g.drawString(levels, 5, y += 20);
+        var stateMessage = String.format("Current state: %s", stateString);
+        g.drawString(stateMessage, 5, y += 20);
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
             message.append("Looted: ");
@@ -112,11 +117,11 @@ public class Main extends AbstractScript {
 
         if (config.isPaintTimeToGoalItemsCollect()) {
             var message = new StringBuilder();
-            message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
+                message.append("Time to goal: ");
                 var itemsPerSecond = duration / lootCount;
                 var timeLeft = itemsPerSecond * (goal - bankedAmount);
-                message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
+                message.append(String.format("%d:%02d:%02d ", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
             g.drawString(message.toString(), 5, y += 20);
 
@@ -176,5 +181,33 @@ public class Main extends AbstractScript {
                 Walking.toggleRun();
             }
         }
+    }
+
+    public Skill getSkillToTrain() {
+        return skillToTrain;
+    }
+
+    public void setSkillToTrain(Skill skillToTrain) {
+        this.skillToTrain = skillToTrain;
+    }
+
+    public void setGenericSkill(GenericSkill genericSkill) {
+        this.genericSkill = genericSkill;
+    }
+
+    public void setConfig(Config config) {
+        this.config = config;
+    }
+
+    public boolean isStart() {
+        return start;
+    }
+
+    public void setStart(boolean start) {
+        this.start = start;
+    }
+
+    public void setStateString(String stateString) {
+        this.stateString = stateString;
     }
 }

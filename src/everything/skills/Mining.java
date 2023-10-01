@@ -25,7 +25,7 @@ public class Mining {
     static String COPPER_NAME = "Copper rocks";
     static String IRON_NAME = "Iron rocks";
     static String SILVER_NAME = "Silver rocks";
-    static String ORE = "silver ore";
+    static String ORE = "iron ore";
 
     public static void mine() {
 
@@ -84,9 +84,9 @@ public class Mining {
 
     private static GameObject getClosest() {
         return GameObjects.closest(object ->
-                object.getName().equalsIgnoreCase(SILVER_NAME)
+                object.getName().equalsIgnoreCase(IRON_NAME)
                         && object.hasAction("Mine")
-                        && object.distance() <= 20
+                        && object.distance() <= 15
                         && object.getModelColors() != null
         );
     }

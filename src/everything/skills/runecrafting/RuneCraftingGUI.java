@@ -1,30 +1,30 @@
-package everything;
+package everything.skills.runecrafting;
 
+import everything.Config;
+import everything.Main;
+import everything.SkillGUI;
 import net.miginfocom.swing.MigLayout;
-import org.dreambot.api.methods.skills.Skill;
-import org.dreambot.api.methods.skills.SkillTracker;
 
 import javax.swing.*;
 
-public class GUI extends JFrame {
-    public GUI(Main main) {
+public class RuneCraftingGUI extends JFrame implements SkillGUI {
+    public RuneCraftingGUI(Main main) {
         super();
-
-        setTitle("Everything");
+        setTitle("Everything RuneCrafting");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
         setResizable(false);
 
-        JLabel modeLabel = new JLabel("Skill:");
-        JComboBox<Skill> modeComboBox = new JComboBox<>(Skill.values());
-        JButton nextButton = new JButton("Next");
+        JLabel modeLabel = new JLabel("RUNES:");
+        JComboBox<RuneCraftingConfig.Runes> modeComboBox = new JComboBox<>(RuneCraftingConfig.Runes.values());
+        JButton nextButton = new JButton("Start");
 
         // When the start script button is pressed, we let the script know which mode to run in and remove the GUI
         nextButton.addActionListener((_event) -> {
-            var skillToTrain = (Skill) modeComboBox.getSelectedItem();
-            main.setSkillToTrain(skillToTrain);
-            SkillTracker.start(skillToTrain);
-            var guiFactory = new GUIFactory(main);
-            SwingUtilities.invokeLater(() -> guiFactory.createSkillGui(skillToTrain));
+            var runes = (RuneCraftingConfig.Runes) modeComboBox.getSelectedItem();
+            main.setConfig(new Config(true, false, false));
+            var config = new RuneCraftingConfig().getRuneCraftingConfig(runes);
+            main.setGenericSkill(new RuneCraftingV2(main, config.getRuins(), config.getTiara(), config.getRunesPerEssence()));
+            main.setStart(true);
             dispose();
         });
 
@@ -41,4 +41,5 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true); // Show the GUI
     }
+
 }

@@ -20,7 +20,7 @@ public class RuneCrafting {
     static Area AIR_ALTAR = new Area(2982, 3296, 2986, 3293);
     static Area MIND_ALTAR = new Area(2978, 3516, 2986, 3511);
     static Area BODY_ALTAR = new Area(3050, 3446, 3054, 3439);
-    private static final int RUNES_PER_ESSENCE = 4;
+    private static final int RUNES_PER_ESSENCE = 1;
 
     public static void craft() {
 
@@ -30,7 +30,7 @@ public class RuneCrafting {
         }
 
         if (Main.state.equals(States.IDLE)) {
-            Walking.walk(AIR_ALTAR.getRandomTile());
+            Walking.walk(BODY_ALTAR.getRandomTile());
             var ruins = ruins();
             if (ruins != null && ruins.interact("Enter")) {
 //                ruins.interact("Enter");

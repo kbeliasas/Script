@@ -26,10 +26,10 @@ public class Smithing {
 
     static Area FURNACE = new Area(3105, 3501, 3109, 3496);
     static Area ANVIL = new Area(3185, 3427, 3190, 3420);
-    static String ORE = "silver ore";
-    static String BAR = "silver bar";
+    static String ORE = "iron ore";
+    static String BAR = "iron bar";
     static String PRODUCT = "platebody";
-    static int ORES_PER_BAR = 1;
+    static int ORES_PER_BAR = 2;
 
     public static void smelt() {
         if (!Players.getLocal().isAnimating()) {

@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class Firemaking {
 
-    static String LOG_NAME = "log";
+    static String LOG_NAME = "willow";
     static String ASHES = "ashes";
     static Area BURNING_AREA = new Area(3167, 3443, 3178, 3428);
 
@@ -35,6 +35,7 @@ public class Firemaking {
                     break;
                 case BANKING: {
                     if (Banking.openBank()) {
+                        Main.goal = Bank.count(item -> item.getName().toLowerCase(Locale.ROOT).contains(LOG_NAME));
                         if (Bank.contains(item -> item.getName().toLowerCase(Locale.ROOT).contains(LOG_NAME))) {
                             Bank.withdrawAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(LOG_NAME));
                         } else {
@@ -42,11 +43,11 @@ public class Firemaking {
                             Bank.close();
                             ScriptManager.getScriptManager().stop();
                         }
+                        Sleep.sleep(Calculations.random(2000,3000));
                         var logs = Inventory.get(item -> item.getName().toLowerCase(Locale.ROOT).contains(LOG_NAME));
                         if (logs != null) {
-                            Util.addLoot(logs.getName(), logs.getAmount());
+                            Util.addLoot(logs.getName(), Inventory.count(item -> item.getID() == logs.getID()));
                         }
-                        Main.goal = Bank.count(item -> item.getName().toLowerCase(Locale.ROOT).contains(LOG_NAME));
                     }
                 }
                 break;
@@ -93,7 +94,9 @@ public class Firemaking {
 
         var fire = GameObjects.closest(object -> object.getName().toLowerCase(Locale.ROOT).contains("fire")
                 && object.getTile().equals(Players.getLocal().getTile()));
-        if (fire != null) {
+        var daisy = GameObjects.closest(object -> object.getName().toLowerCase(Locale.ROOT).contains("daisies")
+                && object.getTile().equals(Players.getLocal().getTile()));
+        if (fire != null || daisy != null) {
             Main.state = States.WALKING;
             return;
         }

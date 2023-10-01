@@ -24,13 +24,13 @@ public class Woodcutting {
     static Area TREE_AREA = new Area(3153, 3464, 3181, 3450);
     static Area OAK = new Area(3167, 3426, 3172, 3416);
     static Area WILLOW = new Area(3084, 3238, 3092, 3229);
-    static String TREE = "oak";
+    static String TREE = "willow";
 
 
     public static void cut() {
         if (!Players.getLocal().isAnimating()) {
 
-//            if (Skills.getRealLevel(Skill.WOODCUTTING) >= Main.goal) {
+//            if (Skills.getExperience(Main.skillToTrain) >= Main.goalXp) {
 //                Logger.log("Target level reached!");
 //                Main.printResults();
 //                ScriptManager.getScriptManager().stop();
@@ -57,7 +57,7 @@ public class Woodcutting {
             }
 
             if (Main.state.equals(States.IDLE)) {
-                Walking.walk(OAK.getRandomTile());
+                Walking.walk(WILLOW.getRandomTile());
                 var tree = getCloset();
                 if (tree != null) {
                     Main.state = States.WOODCUTTING;
