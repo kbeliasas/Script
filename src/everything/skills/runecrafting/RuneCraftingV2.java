@@ -79,7 +79,7 @@ public class RuneCraftingV2 implements GenericSkill {
                     break;
                 case FAILURE:
                     Logger.error("ERROR State failed to set state;");
-                    Main.printResults();
+                    main.printResults();
                     ScriptManager.getScriptManager().stop();
             }
         } else {
