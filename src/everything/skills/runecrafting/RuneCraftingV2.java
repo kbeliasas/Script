@@ -24,19 +24,17 @@ import java.util.Locale;
 public class RuneCraftingV2 implements GenericSkill {
 
     private final Main main;
-    private final Area RUINS;
-    private final int TIARA;
-    private final int RUNES_PER_ESSENCE;
+    private final Area ruins;
+    private final int tiara;
+    private final int runesPerEssence;
     private State state;
     private boolean ready = false;
 
-    static Area BODY_RUINS = new Area(3050, 3446, 3054, 3439);
-
     public RuneCraftingV2(Main main, Area ruins, int tiara, int runesPerEssence) {
         this.main = main;
-        RUINS = ruins;
-        TIARA = tiara;
-        RUNES_PER_ESSENCE = runesPerEssence;
+        this.ruins = ruins;
+        this.tiara = tiara;
+        this.runesPerEssence = runesPerEssence;
     }
 
     @Override
@@ -61,11 +59,11 @@ public class RuneCraftingV2 implements GenericSkill {
                             Main.printResults();
                             ScriptManager.getScriptManager().stop();
                         }
-                        Main.goal = Bank.count(this::pureEssence) * RUNES_PER_ESSENCE;
+                        Main.goal = Bank.count(this::pureEssence) * runesPerEssence;
                     }
                     break;
                 case TRAVELING:
-                    Walking.walk(BODY_RUINS.getRandomTile());
+                    Walking.walk(ruins.getRandomTile());
                     break;
                 case NEAR_RUINS:
                     ruins().interact("Enter");
@@ -85,7 +83,7 @@ public class RuneCraftingV2 implements GenericSkill {
                     ScriptManager.getScriptManager().stop();
             }
         } else {
-            if (Equipment.onlyContains(Constatnts.BODY_TIARA)) {
+            if (Equipment.onlyContains(tiara)) {
                 ready = true;
                 return;
             } else {
@@ -93,11 +91,11 @@ public class RuneCraftingV2 implements GenericSkill {
                     Equipment.unequip(item -> true);
                 }
             }
-            if (Inventory.contains(Constatnts.BODY_TIARA)) {
-                Equipment.equip(EquipmentSlot.HAT, Constatnts.BODY_TIARA);
+            if (Inventory.contains(tiara)) {
+                Equipment.equip(EquipmentSlot.HAT, tiara);
             } else {
                 if (Banking.openBank()) {
-                    Bank.withdraw(Constatnts.BODY_TIARA);
+                    Bank.withdraw(tiara);
                 }
             }
 
@@ -142,8 +140,8 @@ public class RuneCraftingV2 implements GenericSkill {
     }
 
     private GameObject ruins() {
-        return GameObjects.closest(ruins -> ruins.getName().toLowerCase(Locale.ROOT).contains("mysterious ruins")
-                && ruins.distance() < 8 && ruins.canReach());
+        return GameObjects.closest(ruinsObject -> ruinsObject.getName().toLowerCase(Locale.ROOT).contains("mysterious ruins")
+                && ruinsObject.distance() < 8 && ruinsObject.canReach());
     }
 
     private GameObject altar() {
