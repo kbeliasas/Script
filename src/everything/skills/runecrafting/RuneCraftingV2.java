@@ -1,6 +1,6 @@
 package everything.skills.runecrafting;
 
-import everything.Constatnts;
+import everything.Constants;
 import everything.Main;
 import everything.Util;
 import everything.skills.Banking;
@@ -155,6 +155,6 @@ public class RuneCraftingV2 implements GenericSkill {
     }
 
     private boolean pureEssence(Item item) {
-        return item.getID() == Constatnts.PURE_ESSENCE;
+        return item.getID() == Constants.PURE_ESSENCE;
     }
 }
