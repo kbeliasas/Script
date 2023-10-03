@@ -86,7 +86,7 @@ public class Mining {
         return GameObjects.closest(object ->
                 object.getName().equalsIgnoreCase(IRON_NAME)
                         && object.hasAction("Mine")
-                        && object.distance() <= 15
+                        && object.distance() <= 20
                         && object.getModelColors() != null
         );
     }

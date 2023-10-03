@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
         version = 1.0, category = Category.UTILITY, image = "")
 public class Main extends AbstractScript {
 
+    private Util util;
+
     public static States state = States.IDLE;
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
@@ -52,6 +54,7 @@ public class Main extends AbstractScript {
 //        Mouse.setMouseAlgorithm(new NaturalMouse());
         Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
         startTime = Instant.now();
+        util = new Util();
         SwingUtilities.invokeLater(() -> new GUI(this));
     }
 
@@ -75,10 +78,11 @@ public class Main extends AbstractScript {
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
-        var levels = String.format("Skill %s. Current XP: %s K. Current: %s. Levels gained: %s. Time to next level: %s",
+        var levels = String.format("Skill %s. Current XP: %s K. Current lvl: %s. XP gained: %s K. Lvl gained: %s. Time to next level: %s",
                 skillToTrain.getName(),
                 Skills.getExperience(skillToTrain) / 1000,
                 Skills.getRealLevel(skillToTrain),
+                SkillTracker.getGainedExperience(skillToTrain) / 1000,
                 SkillTracker.getGainedLevels(skillToTrain),
                 String.format("%d:%02d:%02d",
                         TimeUnit.MILLISECONDS.toHours(timeToLvl),
@@ -147,6 +151,9 @@ public class Main extends AbstractScript {
             String bankedMessage = "Banked amount: " + bankedAmount;
             g.drawString(bankedMessage, 5, y += 20);
         }
+        var xpRate = SkillTracker.getGainedExperiencePerHour(skillToTrain);
+        var message = "XP rate: " + xpRate / 1000 + " K per hour";
+        g.drawString(message, 5, y += 20);
     }
 
     public static void printResults() {
@@ -209,5 +216,13 @@ public class Main extends AbstractScript {
 
     public void setStateString(String stateString) {
         this.stateString = stateString;
+    }
+
+    public void setGoal(int goal) {
+        this.goal = goal;
+    }
+
+    public Util getUtil() {
+        return util;
     }
 }
