@@ -41,4 +41,18 @@ public class Util {
             }
         }
     }
+
+    public boolean isAnimatingOrWalking() {
+        if (Players.getLocal().isAnimating() || Players.getLocal().isMoving()) {
+            wasAnimating = true;
+            return true;
+        } else {
+            if (wasAnimating) {
+                wasAnimating = false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 }

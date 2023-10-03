@@ -3,6 +3,7 @@ package everything;
 import everything.skills.cooking.CookingGUI;
 import everything.skills.mining.MiningGUI;
 import everything.skills.runecrafting.RuneCraftingGUI;
+import everything.skills.smithing.SmithingGenericGUI;
 import org.dreambot.api.methods.skills.Skill;
 
 public class GUIFactory {
@@ -43,7 +44,7 @@ public class GUIFactory {
             case CRAFTING:
                 break;
             case SMITHING:
-                break;
+                return new SmithingGenericGUI(main);
             case MINING:
                 return new MiningGUI(main);
             case HERBLORE:
