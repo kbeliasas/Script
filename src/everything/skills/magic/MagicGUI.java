@@ -1,0 +1,52 @@
+package everything.skills.magic;
+
+import everything.Config;
+import everything.Main;
+import everything.SkillGUI;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+
+public class MagicGUI extends JFrame implements SkillGUI {
+    public MagicGUI(Main main) {
+        super();
+        setTitle("Everything Magic");
+        setLayout(new MigLayout("fill, gap 5, insets 10"));
+        setResizable(false);
+
+        var mobLabel = new JLabel("MOB:");
+        var mobComboBox = new JComboBox<>(MagicConfig.Mob.values());
+        var goalLabel = new JLabel("GOAL XP K:");
+        var goalSpinnerModel = new SpinnerNumberModel(0, 0, 100000, 1);
+        var goalSpinner = new JSpinner(goalSpinnerModel);
+        var startButton = new JButton("Start");
+
+        // When the start script button is pressed, we let the script know which mode to run in and remove the GUI
+        startButton.addActionListener((_event) -> {
+            var mob = (MagicConfig.Mob) mobComboBox.getSelectedItem();
+            var goal = (Integer) goalSpinner.getValue() * 1000;
+            main.setConfig(new Config(false, false, true));
+            var config = new MagicConfig().getMagicConfig(mob);
+            main.setGenericSkill(new MagicV2(main, config));
+            main.setGoalXp(goal);
+            main.setStart(true);
+            dispose();
+        });
+
+        // GUI layout:
+        //
+        // |-Label-|-ComboBox-|
+        // |-----Button-------|
+
+        add(mobLabel, "split"); // split will split the current row
+        add(mobComboBox, "grow, wrap");// grow will let it get as large as it can, wrap will end this row
+        add(goalLabel, "split");
+        add(goalSpinner, "grow, wrap");
+        add(startButton, "grow"); // on the second row now, let the button fill the entire row
+
+        pack(); // Fit all of our components to the frame
+        setLocationRelativeTo(null); // Center the frame on the screen
+        setVisible(true); // Show the GUI
+    }
+
+}

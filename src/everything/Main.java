@@ -218,8 +218,20 @@ public class Main extends AbstractScript {
         this.stateString = stateString;
     }
 
+    public int getGoal() {
+        return goal;
+    }
+
     public void setGoal(int goal) {
         this.goal = goal;
+    }
+
+    public int getGoalXp() {
+        return goalXp;
+    }
+
+    public void setGoalXp(int goal) {
+        goalXp = goal;
     }
 
     public Util getUtil() {

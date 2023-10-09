@@ -2,6 +2,7 @@ package everything;
 
 import everything.skills.cooking.CookingGUI;
 import everything.skills.crafting.CraftingGenericGUI;
+import everything.skills.magic.MagicGUI;
 import everything.skills.mining.MiningGUI;
 import everything.skills.runecrafting.RuneCraftingGUI;
 import everything.skills.smithing.SmithingGenericGUI;
@@ -31,7 +32,7 @@ public class GUIFactory {
             case PRAYER:
                 break;
             case MAGIC:
-                break;
+                return new MagicGUI(main);
             case COOKING:
                 return new CookingGUI(main);
             case WOODCUTTING:
