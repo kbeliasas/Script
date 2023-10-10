@@ -30,18 +30,6 @@ public class MagicV2 implements GenericSkill {
 
     @Override
     public void execute() {
-        if (!Inventory.contains(MIND_RUNE) || Skills.getExperience(Skill.MAGIC) > main.getGoalXp()) {
-            Logger.log("Target level reached!");
-            if (Banking.openBank()) {
-                Bank.depositAllItems();
-                Sleep.sleep(Calculations.random(800, 1200));
-                Bank.close();
-                Sleep.sleep(Calculations.random(800, 1200));
-                Main.printResults();
-                ScriptManager.getScriptManager().stop();
-            }
-            return;
-        }
         setState();
         main.setStateString(state.name());
         switch (state) {
@@ -56,6 +44,17 @@ public class MagicV2 implements GenericSkill {
             case TRAVELING:
                 Walking.walk(area.getRandomTile());
                 break;
+            case FINISH:
+                if (Banking.openBank()) {
+                    Logger.log("Target level reached!");
+                    Bank.depositAllItems();
+                    Sleep.sleep(Calculations.random(800, 1200));
+                    Bank.close();
+                    Sleep.sleep(Calculations.random(800, 1200));
+                    Main.printResults();
+                    ScriptManager.getScriptManager().stop();
+                }
+                break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
                 main.printResults();
@@ -64,10 +63,15 @@ public class MagicV2 implements GenericSkill {
     }
 
     private enum State {
-        MAGIC, TRAVELING, FAILURE
+        MAGIC, TRAVELING, FINISH, FAILURE
     }
 
     private void setState() {
+        if (!Inventory.contains(MIND_RUNE) || Skills.getExperience(Skill.MAGIC) > main.getGoalXp()) {
+            state = State.FINISH;
+            return;
+        }
+
         if (area.contains(Players.getLocal())) {
             state = State.MAGIC;
             return;
