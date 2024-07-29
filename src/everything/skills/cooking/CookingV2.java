@@ -4,14 +4,18 @@ import everything.Main;
 import everything.Util;
 import everything.skills.Banking;
 import everything.skills.GenericSkill;
+import org.dreambot.api.input.Keyboard;
+import org.dreambot.api.input.event.impl.keyboard.awt.Key;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
 import org.dreambot.api.methods.container.impl.equipment.Equipment;
-import org.dreambot.api.methods.input.Keyboard;
+import org.dreambot.api.methods.dialogues.Dialogues;
 import org.dreambot.api.methods.interactive.GameObjects;
 import org.dreambot.api.methods.interactive.Players;
 import org.dreambot.api.methods.map.Area;
+import org.dreambot.api.methods.skills.Skill;
+import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.ScriptManager;
 import org.dreambot.api.utilities.Logger;
@@ -64,9 +68,14 @@ public class CookingV2 implements GenericSkill {
                     Walking.walk(cookingLocation.getRandomTile());
                     break;
                 case COOKING:
+                    var cookingLevel = Skills.getRealLevel(Skill.COOKING);
                     cookingRange().interact("Cook");
-                    Sleep.sleepUntil(() -> !Players.getLocal().isStandingStill(), Calculations.random(5000, 6000));
-                    Keyboard.typeSpecialKey(32);
+                    Sleep.sleepUntil(() -> Players.getLocal().isStandingStill() && Dialogues.inDialogue(),
+                            Calculations.random(30000, 40000),
+                            Calculations.random(500, 1000));
+                    Keyboard.typeKey(Key.SPACE);
+                    Sleep.sleepUntil(() -> !Inventory.contains(rawFish) || Skills.getRealLevel(Skill.COOKING) > cookingLevel
+                            , Calculations.random(70000, 80000));
                     break;
                 case DROPPING:
                     Inventory.dropAll(item -> item.getName().toLowerCase(Locale.ROOT).contains("burnt"));

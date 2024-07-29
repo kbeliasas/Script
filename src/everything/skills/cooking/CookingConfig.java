@@ -8,6 +8,10 @@ public class CookingConfig {
     private static final Area EDGEVILLE_COOKING = new Area(3077, 3495, 3080, 3489);
     private static final int LOBSTER = 379;
     private static final int LOBSTER_RAW = 377;
+    private static final int TUNA = 361;
+    private static final int TUNA_RAW = 359;
+    private static final int SWORDFISH = 373;
+    private static final int SWORDFISH_RAW = 371;
 
     public CookingDto getCookingConfig(Fish fish, Location location) {
         var builder = new CookingDto.CookingDtoBuilder();
@@ -15,6 +19,14 @@ public class CookingConfig {
             case LOBSTER:
                 builder.setFish(LOBSTER);
                 builder.setRawFish(LOBSTER_RAW);
+                break;
+            case TUNA:
+                builder.setFish(TUNA);
+                builder.setRawFish(TUNA_RAW);
+                break;
+            case SWORDFISH:
+                builder.setFish(SWORDFISH);
+                builder.setRawFish(SWORDFISH_RAW);
                 break;
         }
         switch (location) {
@@ -29,7 +41,7 @@ public class CookingConfig {
     }
 
     public enum Fish {
-        LOBSTER
+        LOBSTER, TUNA, SWORDFISH
     }
 
     public enum Location {

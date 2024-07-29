@@ -6,8 +6,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
-public class SmeltingGUI extends JFrame {
-    public SmeltingGUI(Main main) {
+public class SmithingGUI extends JFrame {
+    public SmithingGUI(Main main) {
         super();
         setTitle("Everything Smithing");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
@@ -21,12 +21,8 @@ public class SmeltingGUI extends JFrame {
         nextButton.addActionListener((_event) -> {
             var bar = (SmithingConfig.Bar) barComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new SmithingConfig().getSmeltingConfig(bar);
-            main.setGenericSkill(
-                    new Smeting(main,
-                            main.getUtil(),
-                            config.getOreInfos(),
-                            config.getFurnacePlace()));
+            var config = new SmithingConfig().getSmithingConfig(bar);
+            main.setGenericSkill(new SmithingV2(main, config));
             main.setStart(true);
             dispose();
         });

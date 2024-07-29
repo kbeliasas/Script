@@ -86,6 +86,9 @@ public class MiningV2 implements GenericSkill {
                             Walking.toggleRun();
                         }
                     }
+                    if (Calculations.random(0, 50) == 5) {
+                        Walking.walk(mine.getRandomTile());
+                    }
                     break;
                 case FAILURE:
                     Logger.error("ERROR State failed to set state;");

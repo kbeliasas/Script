@@ -22,8 +22,13 @@ public class SmithingGenericGUI extends JFrame implements SkillGUI {
         // When the start script button is pressed, we let the script know which mode to run in and remove the GUI
         nextButton.addActionListener((_event) -> {
             var type = (SmithingConfig.Type) modeComboBox.getSelectedItem();
-            if (type == SmithingConfig.Type.SMELTING) {
-                SwingUtilities.invokeLater(() -> new SmeltingGUI(main));
+            switch (type) {
+                case SMITHING:
+                    SwingUtilities.invokeLater(() -> new SmithingGUI(main));
+                    break;
+                case SMELTING:
+                    SwingUtilities.invokeLater(() -> new SmeltingGUI(main));
+                    break;
             }
             dispose();
         });

@@ -5,7 +5,9 @@ import everything.States;
 import everything.Util;
 import everything.skills.Banking;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.dreambot.api.input.event.impl.keyboard.awt.Key;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
@@ -23,15 +25,15 @@ import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.wrappers.interactive.GameObject;
 
+import java.util.List;
 import java.util.Locale;
 
 @RequiredArgsConstructor
 public class Smeting implements SmithingGeneric {
     private final Main main;
     private final Util util;
-    private final int oreId;
+    private final List<OreInfo> oreInfos;
     private final Area furnacePlace;
-    private final int oresPerBar;
     private State state;
 
     @Override
@@ -44,8 +46,9 @@ public class Smeting implements SmithingGeneric {
                 if (furnace().interact("Smelt")) {
                     Sleep.sleepUntil(Dialogues::inDialogue, Calculations.random(5000, 6000));
                     Keyboard.typeKey(Key.SPACE);
-                    Sleep.sleepUntil(() -> !Inventory.contains(oreId) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
-                            Calculations.random(70000, 80000));
+                    var oreId = oreInfos.stream().findFirst().map(OreInfo::getOreID);
+                    Sleep.sleepUntil(() -> !Inventory.contains(oreId.orElseThrow()) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                            Calculations.random(80000, 90000));
                 }
                 break;
             case BANKING:
@@ -57,14 +60,33 @@ public class Smeting implements SmithingGeneric {
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 800));
-                    if (!Bank.contains(ore -> ore.getID() == oreId)) {
+                    var oreId = oreInfos.stream().findFirst().map(OreInfo::getOreID);
+                    var oresPerBar = oreInfos.stream().findFirst().map(OreInfo::getCount);
+                    if (!Bank.contains(ore -> ore.getID() == oreId.orElseThrow())) {
                         Logger.log("Goal reached");
                         ScriptManager.getScriptManager().stop();
                     }
-                    Bank.withdrawAll(oreId);
+                    if (oreInfos.size() > 1) {
+                        var ore1 = oreInfos.get(0).getOreID();
+                        var count1 = oreInfos.get(0).getCount();
+                        var ore2 = oreInfos.get(1).getOreID();
+                        var count2 = oreInfos.get(1).getCount();
+                        if (count1 == 1 && count2 == 2) {
+                            Bank.withdraw(ore1, 9);
+                            Sleep.sleep(Calculations.random(500, 800));
+                            Bank.withdraw(ore2, 18);
+                        }
+                        if (count1 == 2 && count2 == 1) {
+                            Bank.withdraw(ore1, 18);
+                            Sleep.sleep(Calculations.random(500, 800));
+                            Bank.withdraw(ore2, 9);
+                        }
+                    } else {
+                        Bank.withdrawAll(oreInfos.get(0).getOreID());
+                    }
 //                    Bank.withdraw(ore -> ore.getName().toLowerCase(Locale.ROOT).contains(ORE), 14);
                     Sleep.sleep(Calculations.random(500, 1000));
-                    Main.goal = Bank.count(ore -> ore.getID() == oreId) / oresPerBar;
+                    Main.goal = Bank.count(ore -> ore.getID() == oreId.orElseThrow()) / oresPerBar.orElseThrow();
                     Main.state = States.IDLE;
                 }
                 break;
@@ -83,6 +105,7 @@ public class Smeting implements SmithingGeneric {
     }
 
     void setState() {
+        var oreId = oreInfos.stream().findFirst().map(OreInfo::getOreID).orElseThrow();
         if (furnace() != null && Inventory.contains(oreId)) {
             state = State.SMELTING;
             return;
