@@ -1,5 +1,6 @@
 package everything;
 
+import everything.skills.combating.CombatingGUI;
 import everything.skills.cooking.CookingGUI;
 import everything.skills.crafting.CraftingGenericGUI;
 import everything.skills.fishing.FishingGUI;
@@ -21,11 +22,9 @@ public class GUIFactory {
 
         switch (skill) {
             case ATTACK:
-                break;
-            case DEFENCE:
-                break;
             case STRENGTH:
-                break;
+            case DEFENCE:
+                return new CombatingGUI(main, skill);
             case HITPOINTS:
                 break;
             case RANGED:
