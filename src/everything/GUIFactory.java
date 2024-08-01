@@ -8,6 +8,7 @@ import everything.skills.magic.MagicGUI;
 import everything.skills.mining.MiningGUI;
 import everything.skills.runecrafting.RuneCraftingGUI;
 import everything.skills.smithing.SmithingGenericGUI;
+import everything.skills.woodcutting.WoodcuttingGUI;
 import org.dreambot.api.methods.skills.Skill;
 
 public class GUIFactory {
@@ -36,7 +37,7 @@ public class GUIFactory {
             case COOKING:
                 return new CookingGUI(main);
             case WOODCUTTING:
-                break;
+                return new WoodcuttingGUI(main);
             case FLETCHING:
                 break;
             case FISHING:
