@@ -1,5 +1,7 @@
 package everything.skills.fishing;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.map.Area;
 
 public class FishingConfig {
@@ -14,26 +16,15 @@ public class FishingConfig {
     private static final Area FISHING_SPOT_BARBARIAN_VILLAGE = new Area(3100, 3427, 3103, 3424);
     private static final Area MUSA_POINT = new Area(2923, 3180, 2925, 3175);
 
-    public FishingDto getFishingConfig(Fish fish) {
-        var builder = FishingDto.builder();
-        switch (fish) {
-            case LOBSTER:
-                builder.area(MUSA_POINT);
-                builder.fishId(LOBSTER_ID);
-                builder.action(CAGE);
-                builder.equipmentID(LOBSTER_POT);
-                break;
-            case SWORFISH:
-                builder.area(MUSA_POINT);
-                builder.fishId(SWORDFISH_ID);
-                builder.action(HARPOON_ACTION);
-                builder.equipmentID(HARPOON);
-                break;
-        }
-        return builder.build();
-    }
-
+    @RequiredArgsConstructor
+    @Getter
     enum Fish {
-        LOBSTER, SWORFISH
+        LOBSTER(MUSA_POINT, LOBSTER_ID, CAGE, LOBSTER_POT),
+        SWORFISH(MUSA_POINT, SWORDFISH_ID, HARPOON_ACTION, HARPOON);
+
+        private final Area area;
+        private final Integer fishId;
+        private final String action;
+        private final Integer equipmentId;
     }
 }

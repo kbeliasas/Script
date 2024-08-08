@@ -4,6 +4,7 @@ import everything.Main;
 import everything.Util;
 import everything.skills.Banking;
 import everything.skills.GenericSkill;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.input.Keyboard;
 import org.dreambot.api.input.event.impl.keyboard.awt.Key;
 import org.dreambot.api.methods.Calculations;
@@ -24,77 +25,77 @@ import org.dreambot.api.wrappers.interactive.GameObject;
 
 import java.util.Locale;
 
+@RequiredArgsConstructor
 public class CookingV2 implements GenericSkill {
 
     private final Main main;
     private final int rawFish;
-    private final int fish;
+    private final int fishId;
     private final Area cookingLocation;
     private State state;
     private boolean ready = false;
 
-    public CookingV2(Main main, int rawFish, int fish, Area cookingLocation) {
-        this.main = main;
-        this.rawFish = rawFish;
-        this.fish = fish;
-        this.cookingLocation = cookingLocation;
-    }
-
     @Override
     public void execute() {
-        if (ready) {
-            setState();
-            main.setStateString(state.name());
-            switch (state) {
-                case BANKING:
-                    if (Banking.openBank()) {
-                        var fishItem = Inventory.get(item -> item.getID() == fish);
-                        if (fishItem != null) {
-                            var amount = Inventory.count(fish);
-                            Util.addLoot(fishItem.getName(), amount);
-                        }
-                        Bank.depositAllItems();
-                        Sleep.sleep(Calculations.random(500, 1000));
-                        if (Bank.contains(item -> item.getID() == rawFish)) {
-                            Bank.withdrawAll(item -> item.getID() == rawFish);
-                        } else {
-                            main.printResults();
-                            ScriptManager.getScriptManager().stop();
-                        }
-                        Main.goal = Bank.count(item -> item.getID() == rawFish);
+        setState();
+        main.setStateString(state.name());
+        switch (state) {
+            case PREP:
+                if (Equipment.count(item -> true) > 0) {
+                    Equipment.unequip(item -> true);
+                } else {
+                    ready = true;
+                }
+                break;
+            case BANKING:
+                if (Banking.openBank()) {
+                    var fishItem = Inventory.get(fishId);
+                    if (fishItem != null) {
+                        var amount = Inventory.count(fishId);
+                        Util.addLoot(fishItem.getName(), amount);
                     }
-                    break;
-                case TRAVELING:
-                    Walking.walk(cookingLocation.getRandomTile());
-                    break;
-                case COOKING:
-                    var cookingLevel = Skills.getRealLevel(Skill.COOKING);
-                    cookingRange().interact("Cook");
-                    Sleep.sleepUntil(() -> Players.getLocal().isStandingStill() && Dialogues.inDialogue(),
-                            Calculations.random(30000, 40000),
-                            Calculations.random(500, 1000));
-                    Keyboard.typeKey(Key.SPACE);
-                    Sleep.sleepUntil(() -> !Inventory.contains(rawFish) || Skills.getRealLevel(Skill.COOKING) > cookingLevel
-                            , Calculations.random(70000, 80000));
-                    break;
-                case DROPPING:
-                    Inventory.dropAll(item -> item.getName().toLowerCase(Locale.ROOT).contains("burnt"));
-                    break;
-                case FAILURE:
-                    Logger.error("ERROR State failed to set state;");
-                    main.printResults();
-                    ScriptManager.getScriptManager().stop();
-            }
-        } else {
-            if (Equipment.count(item -> true) > 0) {
-                Equipment.unequip(item -> true);
-            } else {
-                ready = true;
-            }
+                    Bank.depositAllItems();
+                    Sleep.sleep(Calculations.random(500, 1000));
+                    if (Bank.contains(rawFish)) {
+                        Bank.withdrawAll(rawFish);
+                    } else {
+                        Logger.info("No more fish");
+                        main.printResults();
+                        Bank.close();
+                        ScriptManager.getScriptManager().stop();
+                    }
+                    Main.goal = Bank.count(rawFish);
+                }
+                break;
+            case TRAVELING:
+                Walking.walk(cookingLocation.getRandomTile());
+                break;
+            case COOKING:
+                var cookingLevel = Skills.getRealLevel(Skill.COOKING);
+                cookingRange().interact("Cook");
+                Sleep.sleepUntil(() -> Players.getLocal().isStandingStill() && Dialogues.inDialogue(),
+                        Calculations.random(30000, 40000),
+                        Calculations.random(500, 1000));
+                Keyboard.typeKey(Key.SPACE);
+                Sleep.sleepUntil(() -> !Inventory.contains(rawFish) || Skills.getRealLevel(Skill.COOKING) > cookingLevel
+                        , Calculations.random(70000, 80000));
+                break;
+            case DROPPING:
+                Inventory.dropAll(item -> item.getName().toLowerCase(Locale.ROOT).contains("burnt"));
+                break;
+            case FAILURE:
+                Logger.error("ERROR State failed to set state;");
+                main.printResults();
+                ScriptManager.getScriptManager().stop();
         }
     }
 
     private void setState() {
+        if (!ready) {
+            state = State.PREP;
+            return;
+        }
+
         if (cookingRange() != null && haveRawFish()) {
             state = State.COOKING;
             return;
@@ -119,7 +120,7 @@ public class CookingV2 implements GenericSkill {
     }
 
     private enum State {
-        BANKING, TRAVELING, COOKING, DROPPING, FAILURE
+        PREP, BANKING, TRAVELING, COOKING, DROPPING, FAILURE
     }
 
     private GameObject cookingRange() {

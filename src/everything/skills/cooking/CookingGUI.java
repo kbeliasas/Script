@@ -25,8 +25,10 @@ public class CookingGUI extends JFrame implements SkillGUI {
             var fish = (CookingConfig.Fish) fishComboBox.getSelectedItem();
             var location = (CookingConfig.Location) locationComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new CookingConfig().getCookingConfig(fish, location);
-            main.setGenericSkill(new CookingV2(main, config.getRawFish(), config.getFish(), config.getCookingLocation()));
+            main.setGenericSkill(new CookingV2(main,
+                    fish.getRawFishId(),
+                    fish.getFishId(),
+                    location.getCookingLocation()));
             main.setStart(true);
             dispose();
         });

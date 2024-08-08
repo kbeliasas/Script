@@ -26,8 +26,12 @@ public class FishingGUI extends JFrame implements SkillGUI {
             var fish = (FishingConfig.Fish) fishComboBox.getSelectedItem();
             var goal = (Integer) goalSpinner.getValue() * 1000;
             main.setConfig(new Config(false, false, true));
-            var config = new FishingConfig().getFishingConfig(fish);
-            main.setGenericSkill(new FishingV2(main, main.getUtil(), config.getArea(), config.getAction(), config.getFishId(), config.getEquipmentID()));
+            main.setGenericSkill(new FishingV2(main,
+                    main.getUtil(),
+                    fish.getArea(),
+                    fish.getAction(),
+                    fish.getFishId(),
+                    fish.getEquipmentId()));
             main.setGoalXp(goal);
             main.setStart(true);
             dispose();
