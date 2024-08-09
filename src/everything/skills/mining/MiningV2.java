@@ -4,6 +4,7 @@ import everything.Main;
 import everything.Util;
 import everything.skills.Banking;
 import everything.skills.GenericSkill;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
@@ -20,9 +21,9 @@ import org.dreambot.api.wrappers.interactive.GameObject;
 
 import java.util.Locale;
 
+@RequiredArgsConstructor
 public class MiningV2 implements GenericSkill {
     private final Main main;
-    private final Util util;
     private final String rocksName;
     private final int oreID;
     private final Area mine;
@@ -31,95 +32,90 @@ public class MiningV2 implements GenericSkill {
     private State state;
     private boolean ready = false;
 
-    public MiningV2(Main main, Util util, String rocksName, int oreID, Area mine, int pickaxe, int distance) {
-        this.main = main;
-        this.util = util;
-        this.rocksName = rocksName;
-        this.oreID = oreID;
-        this.mine = mine;
-        this.pickaxe = pickaxe;
-        this.distance = distance;
-    }
-
     @Override
     public void execute() {
-        if (ready) {
-            setState();
-            main.setStateString(state.name());
-            switch (state) {
-                case BANKING:
+        setState();
+        main.setStateString(state.name());
+        switch (state) {
+            case PREP:
+                if (Equipment.onlyContains(pickaxe)) {
+                    ready = true;
+                    return;
+                } else if (Inventory.contains(pickaxe)) {
+                    Equipment.equip(EquipmentSlot.WEAPON, pickaxe);
+                } else {
                     if (Banking.openBank()) {
-                        var ore = Inventory.get(item -> item.getID() == oreID);
-                        if (ore != null) {
-                            var amount = Inventory.count(oreID);
-                            Util.addLoot(ore.getName(), amount);
-                        }
-                        var gems = Inventory.get(gem ->
-                                gem.getName().toLowerCase(Locale.ROOT).contains("uncut")
-                        );
-                        if (gems != null) {
-                            var amount = Inventory.count(gems.getID());
-                            Util.addLoot(gems.getName(), amount);
-                        }
                         Bank.depositAllItems();
-                        Sleep.sleep(Calculations.random(500, 1000));
-                        var bankedAmount = Bank.count(item -> item.getID() == oreID);
-                        Main.bankedAmount = bankedAmount;
-                        if (bankedAmount >= Main.goal) {
-                            Main.printResults();
-                            Bank.close();
-                            ScriptManager.getScriptManager().stop();
-                        }
+                        Bank.depositAllEquipment();
+                        Bank.withdraw(pickaxe);
                     }
-                    break;
-                case TRAVELING:
-                    Walking.walk(mine.getRandomTile());
-                    break;
-                case MINING:
-                    if (rocks().interact("Mine")) {
-                        Sleep.sleepUntil(() -> !util.isAnimating(), Calculations.random(5000, 6000), Calculations.random(300,600));
-                    }
-                    break;
-                case WAITING:
-                    if (!Walking.isRunEnabled()) {
-                        if (Walking.getRunEnergy() >= 35) {
-                            Walking.toggleRun();
-                        }
-                    }
-                    if (Calculations.random(0, 50) == 5) {
-                        Walking.walk(mine.getRandomTile());
-                    }
-                    break;
-                case FAILURE:
-                    Logger.error("ERROR State failed to set state;");
-                    main.printResults();
-                    ScriptManager.getScriptManager().stop();
-            }
-        } else {
-            if (Equipment.onlyContains(pickaxe)) {
-                ready = true;
-                return;
-            } else {
-                if (Equipment.count(item -> true) > 0) {
-                    Equipment.unequip(item -> true);
                 }
-            }
-            if (Inventory.contains(pickaxe)) {
-                Equipment.equip(EquipmentSlot.WEAPON, pickaxe);
-            } else {
+                break;
+            case BANKING:
                 if (Banking.openBank()) {
+                    var ore = Inventory.get(item -> item.getID() == oreID);
+                    if (ore != null) {
+                        var amount = Inventory.count(oreID);
+                        Util.addLoot(ore.getName(), amount);
+                    }
+                    var gems = Inventory.get(gem ->
+                            gem.getName().toLowerCase(Locale.ROOT).contains("uncut")
+                    );
+                    if (gems != null) {
+                        var amount = Inventory.count(gems.getID());
+                        Util.addLoot(gems.getName(), amount);
+                    }
                     Bank.depositAllItems();
-                    Bank.withdraw(pickaxe);
+                    Sleep.sleep(Calculations.random(500, 1000));
+                    var bankedAmount = Bank.count(item -> item.getID() == oreID);
+                    Main.bankedAmount = bankedAmount;
+                    if (bankedAmount >= Main.goal) {
+                        Logger.info("Goal reached");
+                        Bank.depositAllEquipment();
+                        Main.printResults();
+                        Bank.close();
+                        ScriptManager.getScriptManager().stop();
+                    }
                 }
-            }
+                break;
+            case TRAVELING:
+                Walking.walk(mine.getRandomTile());
+                break;
+            case MINING:
+                var rocks = rocks();
+                if (rocks.interact("Mine")) {
+                    Sleep.sleepUntil(() -> sameRock(rocks) == null,
+                            Calculations.random(5000, 6000),
+                            Calculations.random(300, 600));
+                }
+                break;
+            case WAITING:
+                if (!Walking.isRunEnabled()) {
+                    if (Walking.getRunEnergy() >= 35) {
+                        Walking.toggleRun();
+                    }
+                }
+                if (Calculations.random(0, 50) == 5) {
+                    Walking.walk(mine.getRandomTile());
+                }
+                break;
+            case FAILURE:
+                Logger.error("ERROR State failed to set state;");
+                main.printResults();
+                ScriptManager.getScriptManager().stop();
         }
     }
 
     private enum State {
-        BANKING, TRAVELING, MINING, WAITING, FAILURE
+        PREP, BANKING, TRAVELING, MINING, WAITING, FAILURE
     }
 
     private void setState() {
+        if (!ready) {
+            state = State.PREP;
+            return;
+        }
+
         if (Inventory.isFull()) {
             state = State.BANKING;
             return;
@@ -150,6 +146,12 @@ public class MiningV2 implements GenericSkill {
                         && object.distance() <= distance
                         && object.getModelColors() != null
         );
+    }
+
+    private GameObject sameRock(GameObject oldRock) {
+        return GameObjects.closest(rock ->
+                rock.getCenterPoint().equals(oldRock.getCenterPoint()) &&
+                        rock.getModelColors() != null);
     }
 
 }

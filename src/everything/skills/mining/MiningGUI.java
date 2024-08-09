@@ -29,15 +29,13 @@ public class MiningGUI extends JFrame implements SkillGUI {
             var pickaxe = (MiningConfig.Pickaxe) pickaxeComboBox.getSelectedItem();
             var goal = (Integer) goalSpinner.getValue();
             main.setConfig(new Config(false, true, false));
-            var config = new MiningConfig().getMiningConfig(ore, pickaxe);
             main.setGenericSkill(
                     new MiningV2(main,
-                            main.getUtil(),
-                            config.getRocksName(),
-                            config.getOreID(),
-                            config.getMine(),
-                            config.getPickaxe(),
-                            config.getDistance()));
+                            ore.getRockName(),
+                            ore.getOreId(),
+                            ore.getMine(),
+                            pickaxe.getPickaxeId(),
+                            ore.getDistance()));
             main.setGoal(goal);
             main.setStart(true);
             dispose();
