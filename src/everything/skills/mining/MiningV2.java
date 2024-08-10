@@ -85,7 +85,7 @@ public class MiningV2 implements GenericSkill {
                 var rocks = rocks();
                 if (rocks.interact("Mine")) {
                     Sleep.sleepUntil(() -> sameRock(rocks) == null,
-                            Calculations.random(5000, 6000),
+                            Calculations.random(8000, 12000),
                             Calculations.random(300, 600));
                 }
                 break;
