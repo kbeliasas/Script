@@ -14,15 +14,14 @@ public class SmithingGUI extends JFrame {
         setResizable(false);
 
         var barLabel = new JLabel("BAR:");
-        var barComboBox = new JComboBox<>(SmithingConfig.Bar.values());
+        var barComboBox = new JComboBox<>(SmithingConfig.Platebody.values());
         var nextButton = new JButton("Start");
 
         // When the start script button is pressed, we let the script know which mode to run in and remove the GUI
         nextButton.addActionListener((_event) -> {
-            var bar = (SmithingConfig.Bar) barComboBox.getSelectedItem();
+            var bar = (SmithingConfig.Platebody) barComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new SmithingConfig().getSmithingConfig(bar);
-            main.setGenericSkill(new SmithingV2(main, config));
+            main.setGenericSkill(new SmithingV2(main, bar.getBarId()));
             main.setStart(true);
             dispose();
         });

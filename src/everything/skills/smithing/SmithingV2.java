@@ -36,57 +36,63 @@ public class SmithingV2 implements GenericSkill {
 
     @Override
     public void execute() {
-        if (ready) {
-            setState();
-            main.setStateString(state.name());
-            switch (state) {
-                case BANKING:
+        setState();
+        main.setStateString(state.name());
+        switch (state) {
+            case PREP:
+                if (Inventory.contains(HAMMER_ID)) {
+                    ready = true;
+                } else {
                     if (Banking.openBank()) {
-                        var product = Inventory.get(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
-                        if (product != null) {
-                            var amount = Inventory.count(product.getID());
-                            Util.addLoot(product.getName(), amount);
-                        }
-                        Bank.depositAllExcept(hammer -> hammer.getID() == HAMMER_ID);
-                        Sleep.sleep(Calculations.random(500, 800));
-                        if (!Bank.contains(bar -> bar.getID() == barId)) {
-                            Logger.log("Goal reached");
-                            main.printResults();
-                            ScriptManager.getScriptManager().stop();
-                        }
-                        main.setGoal(Bank.count(bar -> bar.getID() == barId) / 5);
-                        Bank.withdraw(bar -> bar.getID() == barId, 25);
-
+                        Bank.depositAllItems();
+                        Bank.depositAllEquipment();
+                        Bank.withdraw(HAMMER_ID);
                     }
-                    break;
-                case SMITHING:
-                    var smithingLevel = Skills.getRealLevel(Skill.SMITHING);
-                    anvil().interact("Smith");
-                    Sleep.sleep(Calculations.random(4000, 5000));
-                    makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
-                    Sleep.sleepUntil(() -> !Inventory.contains(barId) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
-                            Calculations.random(70000, 80000));
-                    break;
-                case TRAVELING:
-                    Walking.walk(ANVIL_PLACE.getRandomTile());
-                    break;
-                case FAILURE:
-                    Logger.error("ERROR State failed to set state;");
-                    main.printResults();
-                    ScriptManager.getScriptManager().stop();
-            }
-        } else {
-            if (Inventory.contains(HAMMER_ID)) {
-                ready = true;
-            } else {
-                if (Banking.openBank()) {
-                    Bank.withdraw(HAMMER_ID);
                 }
-            }
+                break;
+            case BANKING:
+                if (Banking.openBank()) {
+                    var product = Inventory.get(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
+                    if (product != null) {
+                        var amount = Inventory.count(product.getID());
+                        Util.addLoot(product.getName(), amount);
+                    }
+                    Bank.depositAllExcept(hammer -> hammer.getID() == HAMMER_ID);
+                    Sleep.sleep(Calculations.random(500, 800));
+                    if (!Bank.contains(bar -> bar.getID() == barId)) {
+                        Logger.log("Goal reached");
+                        main.printResults();
+                        ScriptManager.getScriptManager().stop();
+                    }
+                    main.setGoal(Bank.count(bar -> bar.getID() == barId) / 5);
+                    Bank.withdraw(bar -> bar.getID() == barId, 25);
+
+                }
+                break;
+            case SMITHING:
+                var smithingLevel = Skills.getRealLevel(Skill.SMITHING);
+                anvil().interact("Smith");
+                Sleep.sleep(Calculations.random(4000, 5000));
+                makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
+                Sleep.sleepUntil(() -> !Inventory.contains(barId) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                        Calculations.random(70000, 80000));
+                break;
+            case TRAVELING:
+                Walking.walk(ANVIL_PLACE.getRandomTile());
+                break;
+            case FAILURE:
+                Logger.error("ERROR State failed to set state;");
+                main.printResults();
+                ScriptManager.getScriptManager().stop();
         }
     }
 
     private void setState() {
+        if (!ready) {
+            state = State.PREP;
+            return;
+        }
+
         if (anvil() != null && Inventory.contains(barId)) {
             state = State.SMITHING;
             return;
@@ -106,7 +112,7 @@ public class SmithingV2 implements GenericSkill {
     }
 
     private enum State {
-        BANKING, SMITHING, TRAVELING, FAILURE
+        PREP, BANKING, SMITHING, TRAVELING, FAILURE
     }
 
     private GameObject anvil() {

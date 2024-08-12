@@ -11,18 +11,7 @@ public class SmithingConfig {
     private static final int SILVER_ORE = 442;
     private static final int IRON_ORE = 440;
     private static final int COAL_ORE = 453;
-    private static final int STEEL_BAR = 2353;
     private static final Area FURNACE = new Area(3105, 3501, 3109, 3496);
-
-    public int getSmithingConfig(Bar bar) {
-        switch (bar) {
-            case SILVER:
-                throw new RuntimeException("NOT POSSIBLE");
-            case STEEL:
-                return STEEL_BAR;
-        }
-        return 0;
-    }
 
     public enum Type {
         SMITHING, SMELTING
