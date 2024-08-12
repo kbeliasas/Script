@@ -21,12 +21,8 @@ public class SmeltingGUI extends JFrame {
         nextButton.addActionListener((_event) -> {
             var bar = (SmithingConfig.Bar) barComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new SmithingConfig().getSmeltingConfig(bar);
             main.setGenericSkill(
-                    new Smeting(main,
-                            main.getUtil(),
-                            config.getOreInfos(),
-                            config.getFurnacePlace()));
+                    new Smeting(main, bar.getOreInfos(), bar.getWidgetId()));
             main.setStart(true);
             dispose();
         });

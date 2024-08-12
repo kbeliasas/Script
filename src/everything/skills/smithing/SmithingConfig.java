@@ -1,5 +1,7 @@
 package everything.skills.smithing;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.map.Area;
 
 import java.util.List;
@@ -12,38 +14,35 @@ public class SmithingConfig {
     private static final int STEEL_BAR = 2353;
     private static final Area FURNACE = new Area(3105, 3501, 3109, 3496);
 
-    public SmithingDto getSmeltingConfig(Bar bar) {
-        var builder = new SmithingDto.SmithingDtoBuilder();
-        switch (bar) {
-            case SILVER:
-                var oreInfo = new OreInfo(SILVER_ORE, 1);
-                builder.furnacePlace(FURNACE);
-                builder.oreInfos(List.of(oreInfo));
-                break;
-            case STEEL:
-                var oreInfo1 = new OreInfo(IRON_ORE, 1);
-                var oreInfo2 = new OreInfo(COAL_ORE, 2);
-                builder.furnacePlace(FURNACE);
-                builder.oreInfos(List.of(oreInfo1, oreInfo2));
-                break;
-        }
-        return builder.build();
-    }
-
     public int getSmithingConfig(Bar bar) {
         switch (bar) {
             case SILVER:
-                throw new RuntimeException("NOT POSIIBLE");
+                throw new RuntimeException("NOT POSSIBLE");
             case STEEL:
                 return STEEL_BAR;
         }
         return 0;
     }
+
     public enum Type {
         SMITHING, SMELTING
     }
 
+    @RequiredArgsConstructor
+    @Getter
     public enum Bar {
-        SILVER, STEEL
+        SILVER(List.of(new OreInfo(SILVER_ORE, 28, 1)),16),
+        STEEL(List.of(new OreInfo(IRON_ORE, 9, 1), new OreInfo(COAL_ORE, 18, 2)), 17);
+
+        private final List<OreInfo> oreInfos;
+        private final Integer widgetId;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public enum Platebody {
+        STEEL(2353);
+
+        private final Integer barId;
     }
 }

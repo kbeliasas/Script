@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class OreInfo {
     private final int oreID;
     private final int count;
+    private final int oresPerBar;
 }
