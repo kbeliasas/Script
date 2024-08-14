@@ -1,6 +1,7 @@
 package everything.skills.runecrafting;
 
-import everything.Constants;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.map.Area;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
@@ -10,20 +11,18 @@ public class RuneCraftingConfig {
     private static final Area BODY_RUINS = new Area(3050, 3446, 3054, 3439);
     private static final Area AIR_RUINS = new Area(2982, 3296, 2986, 3293);
 
-    public RuneCraftingDto getRuneCraftingConfig(Runes runes) {
-        switch (runes) {
-            case BODY:
-                return new RuneCraftingDto(getBodyRunesCount(), BODY_RUINS, Constants.BODY_TIARA);
-            case AIR:
-                return new RuneCraftingDto(getAirRunesCount(), AIR_RUINS, Constants.AIR_TIARA);
-        }
-        throw new IllegalStateException("Unknown runes");
-    }
+    @RequiredArgsConstructor
+    @Getter
     public enum Runes {
-        BODY, AIR
+        BODY(getBodyRunesCount(), BODY_RUINS, 5533),
+        AIR(getAirRunesCount(), AIR_RUINS, 5527);
+
+        private final Integer runesCount;
+        private final Area ruins;
+        private final Integer tiaraId;
     }
 
-    private int getBodyRunesCount() {
+    private static int getBodyRunesCount() {
         var level = Skills.getRealLevel(Skill.RUNECRAFTING);
         if (level < 46) {
             return 1;
@@ -34,7 +33,7 @@ public class RuneCraftingConfig {
         return 3;
     }
 
-    private int getAirRunesCount() {
+    private static int getAirRunesCount() {
         var level = Skills.getRealLevel(Skill.RUNECRAFTING);
         if (level < 11) {
             return 1;

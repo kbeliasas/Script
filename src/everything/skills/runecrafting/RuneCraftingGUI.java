@@ -22,8 +22,10 @@ public class RuneCraftingGUI extends JFrame implements SkillGUI {
         nextButton.addActionListener((_event) -> {
             var runes = (RuneCraftingConfig.Runes) modeComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new RuneCraftingConfig().getRuneCraftingConfig(runes);
-            main.setGenericSkill(new RuneCraftingV2(main, config.getRuins(), config.getTiara(), config.getRunesPerEssence()));
+            main.setGenericSkill(new RuneCraftingV2(main,
+                    runes.getRuins(),
+                    runes.getTiaraId(),
+                    runes.getRunesCount()));
             main.setStart(true);
             dispose();
         });
