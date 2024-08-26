@@ -1,6 +1,7 @@
 package everything.skills.combating;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.container.impl.equipment.EquipmentSlot;
 import org.dreambot.api.methods.map.Area;
 
@@ -35,15 +36,12 @@ public class CombatingConfig {
         }
     }
 
+    @RequiredArgsConstructor
     @Getter
     enum Equipment {
         RUNE(getRuneEquipmentMap());
 
         private final Map<EquipmentSlot, Integer> equipmentMap;
-
-        Equipment(Map<EquipmentSlot, Integer> equipmentMap) {
-            this.equipmentMap = equipmentMap;
-        }
     }
 
     private static Map<EquipmentSlot, Integer> getRuneEquipmentMap() {

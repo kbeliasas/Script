@@ -26,8 +26,7 @@ public class MagicGUI extends JFrame implements SkillGUI {
             var mob = (MagicConfig.Mob) mobComboBox.getSelectedItem();
             var goal = (Integer) goalSpinner.getValue() * 1000;
             main.setConfig(new Config(false, false, true));
-            var config = new MagicConfig().getMagicConfig(mob);
-            main.setGenericSkill(new MagicV2(main, config));
+            main.setGenericSkill(new MagicV2(main, mob.getArea(), mob.getEquipmentMap()));
             main.setGoalXp(goal);
             main.setStart(true);
             dispose();
