@@ -27,7 +27,8 @@ public class CombatingConfig {
 
     @Getter
     enum Food {
-        LOBSTER(379);
+        LOBSTER(379),
+        SWORDFISH(373);
 
         private final int id;
 

@@ -4,7 +4,6 @@ import everything.Main;
 import everything.skills.Banking;
 import everything.skills.GenericSkill;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.container.impl.bank.Bank;
@@ -27,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Slf4j
 public class MagicV2 implements GenericSkill {
     private final Main main;
     private final Area area;
