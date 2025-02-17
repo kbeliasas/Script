@@ -10,7 +10,7 @@ import javax.swing.*;
 public class WoodcuttingGUI extends JFrame implements SkillGUI {
     public WoodcuttingGUI(Main main) {
         super();
-        setTitle("com.kbeliasas.everything Woodcutting");
+        setTitle("Woodcutting");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
         setResizable(false);
 

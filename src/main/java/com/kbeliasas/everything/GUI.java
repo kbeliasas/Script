@@ -10,7 +10,7 @@ public class GUI extends JFrame {
     public GUI(Main main) {
         super();
 
-        setTitle("com.kbeliasas.everything");
+        setTitle("everything");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
         setResizable(false);
 
