@@ -73,6 +73,7 @@ public class MiningV2 implements GenericSkill {
                         Logger.info("Goal reached");
                         Bank.depositAllEquipment();
                         Main.printResults();
+                        main.showResults();
                         Bank.close();
                         ScriptManager.getScriptManager().stop();
                     }
@@ -101,6 +102,7 @@ public class MiningV2 implements GenericSkill {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

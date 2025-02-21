@@ -6,6 +6,7 @@ import com.kbeliasas.everything.naturalmouse.support.RsMouseInfoAccessor;
 import com.kbeliasas.everything.naturalmouse.support.RsSystemCalls;
 import com.kbeliasas.everything.naturalmouse.util.FactoryTemplates;
 import com.kbeliasas.everything.skills.GenericSkill;
+import lombok.Setter;
 import org.dreambot.api.Client;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.grandexchange.LivePrices;
@@ -21,12 +22,15 @@ import org.dreambot.api.utilities.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "com.kbeliasas.everything", description = "My script description!", author = "Karolis",
         version = 1.0, category = Category.UTILITY, image = "")
+@Setter
 public class Main extends AbstractScript {
 
     private Util util;
@@ -39,6 +43,7 @@ public class Main extends AbstractScript {
     public static int goal = 158;
     public static int goalXp = 100000; //49
     public static int bankedAmount = 0;
+    public int profit = 0;
     private static States cashedState = States.IDLE;
     private Instant startTime;
     private GenericSkill genericSkill;
@@ -92,6 +97,13 @@ public class Main extends AbstractScript {
         g.drawString(levels, 5, y += 20);
         var stateMessage = String.format("Current state: %s", stateString);
         g.drawString(stateMessage, 5, y += 20);
+        if (profit != 0) {
+            var message = new StringBuilder();
+            message.append("PROFIT: ");
+            message.append(profit / 1000);
+            message.append("K");
+            g.drawString(message.toString(), 5, y += 20);
+        }
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
             message.append("Looted: ");
@@ -173,6 +185,48 @@ public class Main extends AbstractScript {
                             .append(". Lost: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             Logger.info(message.toString());
         }
+    }
+
+    public void showResults() {
+        var results = getResults();
+        SwingUtilities.invokeLater(() -> new ResultsGUI(results));
+    }
+
+    private List<String> getResults() {
+        var result = new ArrayList<String>();
+
+        var level = "Level Trained: " + skillToTrain.getName();
+        result.add(level);
+
+        var gainedExperience = "Gained XP: " + SkillTracker.getGainedExperience(skillToTrain) / 1000 + "K";
+        result.add(gainedExperience);
+
+        var gainedLeveles = "Gained Levels: " + SkillTracker.getGainedLevels(skillToTrain);
+        result.add(gainedLeveles);
+
+        var xpRate = SkillTracker.getGainedExperiencePerHour(skillToTrain);
+        var xpRateMessage = "XP rate: " + xpRate / 1000 + " K per hour";
+        result.add(xpRateMessage);
+
+        var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
+        var timeRan = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
+        result.add("Time ran: " + timeRan);
+
+        if (profit != 0) {
+            var message = "PROFIT: " + profit / 1000 + "K";
+            result.add(message);
+        }
+
+        if (!looted.isEmpty()) {
+            var message = new StringBuilder();
+            message.append("Looted: ");
+            looted.forEach((lootName, lootCount) ->
+                    message.append(lootCount).append(" ").append(lootName)
+                            .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
+            result.add(message.toString());
+        }
+
+        return result;
     }
 
     private void stateTracker() {

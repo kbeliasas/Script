@@ -70,6 +70,7 @@ public class RuneCraftingV2 implements GenericSkill {
                         Bank.withdrawAll(this::pureEssence);
                     } else {
                         Main.printResults();
+                        main.showResults();
                         ScriptManager.getScriptManager().stop();
                     }
                     Main.goal = Bank.count(this::pureEssence) * runesPerEssence;
@@ -92,6 +93,7 @@ public class RuneCraftingV2 implements GenericSkill {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

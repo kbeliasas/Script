@@ -76,6 +76,7 @@ public class CombatingV2 implements GenericSkill {
                     Bank.depositAllItems();
                     Bank.depositAllEquipment();
                     Logger.log("Target xp reached!");
+                    main.showResults();
                     main.printResults();
                     ScriptManager.getScriptManager().stop();
                 }
@@ -139,6 +140,7 @@ public class CombatingV2 implements GenericSkill {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
                 break;

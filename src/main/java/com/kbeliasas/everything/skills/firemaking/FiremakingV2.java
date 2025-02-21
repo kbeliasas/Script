@@ -82,12 +82,14 @@ public class FiremakingV2 implements GenericSkill {
                     Bank.depositAllItems();
                     Logger.info("TARGET XP REACHED!");
                     main.printResults();
+                    main.showResults();
                     ScriptManager.getScriptManager().stop();
                 }
                 break;
             case ERROR:
                 Logger.error("ERROR State failed to set state;");
                 main.printResults();
+                main.showResults();
                 ScriptManager.getScriptManager().stop();
                 break;
         }

@@ -61,6 +61,7 @@ public class SmithingV2 implements GenericSkill {
                     Sleep.sleep(Calculations.random(500, 800));
                     if (!Bank.contains(bar -> bar.getID() == barId)) {
                         Logger.log("Goal reached");
+                        main.showResults();
                         main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
@@ -82,6 +83,7 @@ public class SmithingV2 implements GenericSkill {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

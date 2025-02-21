@@ -5,7 +5,7 @@ import com.kbeliasas.everything.skills.cooking.CookingGUI;
 import com.kbeliasas.everything.skills.crafting.CraftingGenericGUI;
 import com.kbeliasas.everything.skills.firemaking.FiremakingGUI;
 import com.kbeliasas.everything.skills.fishing.FishingGUI;
-import com.kbeliasas.everything.skills.magic.MagicGUI;
+import com.kbeliasas.everything.skills.magic.MagicGenericGUI;
 import com.kbeliasas.everything.skills.mining.MiningGUI;
 import com.kbeliasas.everything.skills.runecrafting.RuneCraftingGUI;
 import com.kbeliasas.everything.skills.smithing.SmithingGenericGUI;
@@ -34,7 +34,7 @@ public class GUIFactory {
             case PRAYER:
                 break;
             case MAGIC:
-                return new MagicGUI(main);
+                return new MagicGenericGUI(main);
             case COOKING:
                 return new CookingGUI(main);
             case WOODCUTTING:

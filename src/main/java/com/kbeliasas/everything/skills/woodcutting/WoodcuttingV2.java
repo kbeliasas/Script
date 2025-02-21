@@ -95,6 +95,7 @@ public class WoodcuttingV2 implements GenericSkill {
                     main.bankedAmount = Bank.count(item ->
                             item.getName().toLowerCase(Locale.ROOT).contains(TREE));
                     Logger.log("Target xp reached!");
+                    main.showResults();
                     main.printResults();
                     Bank.close();
                     ScriptManager.getScriptManager().stop();
@@ -102,6 +103,7 @@ public class WoodcuttingV2 implements GenericSkill {
                 break;
             case ERROR:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
                 break;

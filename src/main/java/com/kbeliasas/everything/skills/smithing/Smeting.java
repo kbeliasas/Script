@@ -60,6 +60,7 @@ public class Smeting implements SmithingGeneric {
                     var oresPerBar = oreInfos.stream().findFirst().map(OreInfo::getOresPerBar);
                     if (!Bank.contains(ore -> ore.getID() == oreId.orElseThrow())) {
                         Logger.log("Goal reached");
+                        main.showResults();
                         ScriptManager.getScriptManager().stop();
                     }
                     oreInfos.forEach(oreInfo -> {
@@ -77,6 +78,7 @@ public class Smeting implements SmithingGeneric {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

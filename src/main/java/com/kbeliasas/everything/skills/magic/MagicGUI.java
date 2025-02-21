@@ -7,7 +7,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
-public class MagicGUI extends JFrame implements SkillGUI {
+public class MagicGUI extends JFrame {
     public MagicGUI(Main main) {
         super();
         setTitle("com.kbeliasas.everything Magic");

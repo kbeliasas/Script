@@ -60,6 +60,7 @@ public class CraftingTiara implements CraftingGeneric {
                         Sleep.sleep(Calculations.random(500, 800));
                         if (!Bank.contains(barId)) {
                             Logger.log("Goal reached");
+                            main.showResults();
                             Main.printResults();
                             ScriptManager.getScriptManager().stop();
                         }
@@ -72,6 +73,7 @@ public class CraftingTiara implements CraftingGeneric {
                     break;
                 case FAILURE:
                     Logger.error("ERROR State failed to set state;");
+                    main.showResults();
                     main.printResults();
                     ScriptManager.getScriptManager().stop();
             }

@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class MagicV2 implements GenericSkill {
+public class MagicV2 implements MagicGeneric {
     private final Main main;
     private final Area area;
     private final Map<EquipmentSlot, Integer> EQUIPMENT_MAP;
@@ -81,11 +81,13 @@ public class MagicV2 implements GenericSkill {
                     Bank.close();
                     Sleep.sleep(Calculations.random(800, 1200));
                     Main.printResults();
+                    main.showResults();
                     ScriptManager.getScriptManager().stop();
                 }
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

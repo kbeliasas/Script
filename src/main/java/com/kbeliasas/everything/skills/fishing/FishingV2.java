@@ -89,6 +89,7 @@ public class FishingV2 implements GenericSkill {
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(800, 1200));
                     Bank.close();
+                    main.showResults();
                     Main.printResults();
                     ScriptManager.getScriptManager().stop();
                     return;
@@ -96,6 +97,7 @@ public class FishingV2 implements GenericSkill {
                 break;
             case FAILURE:
                 Logger.error("ERROR State failed to set state;");
+                main.showResults();
                 main.printResults();
                 ScriptManager.getScriptManager().stop();
         }

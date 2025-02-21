@@ -11,6 +11,10 @@ import java.util.Map;
 public class MagicConfig {
     private static final Area LESSER_DEMON_AREA = new Area(3108, 3163, 3111, 3159, 2);
 
+    enum Type {
+        COMBAT, HIGH_ALCHEMY
+    }
+
     @RequiredArgsConstructor
     @Getter
     enum Mob {
