@@ -204,6 +204,12 @@ public class Main extends AbstractScript {
         var gainedLeveles = "Gained Levels: " + SkillTracker.getGainedLevels(skillToTrain);
         result.add(gainedLeveles);
 
+        var currentXP = "Current XP: " + Skills.getExperience(skillToTrain) / 1000 + "K";
+        result.add(currentXP);
+
+        var currentLevel = "Current Level: " + Skills.getRealLevel(skillToTrain);
+        result.add(currentLevel);
+
         var xpRate = SkillTracker.getGainedExperiencePerHour(skillToTrain);
         var xpRateMessage = "XP rate: " + xpRate / 1000 + " K per hour";
         result.add(xpRateMessage);

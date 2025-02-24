@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class HAItem {
-    private HAConfig.Item item;
+    private HAConfig.ItemStandard item;
     private Integer purchased = 0;
     private boolean bought = false;
 }
