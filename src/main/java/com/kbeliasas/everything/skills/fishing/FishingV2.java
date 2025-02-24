@@ -59,11 +59,13 @@ public class FishingV2 implements GenericSkill {
                 var fishingLevel = Skills.getRealLevel(Skill.FISHING);
                 if (spot != null) {
                     spot.interact(action);
+                    Sleep.sleep(Calculations.random(1000, 3000));
                     Sleep.sleepUntil(() -> sameSpot(spot) == null ||
                                     Skills.getRealLevel(Skill.FISHING) > fishingLevel ||
-                                    Inventory.isFull(),
-                            Calculations.random(50000, 60000),
-                            Calculations.random(300, 600));
+                                    Inventory.isFull() ||
+                            !Players.getLocal().isAnimating(),
+                            Calculations.random(100000, 120000),
+                            Calculations.random(3000, 4000));
                 }
                 break;
             case TRAVELING:
