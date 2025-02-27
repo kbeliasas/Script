@@ -68,11 +68,11 @@ public class MiningV2 implements GenericSkill {
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
                     var bankedAmount = Bank.count(item -> item.getID() == oreID);
-                    Main.bankedAmount = bankedAmount;
-                    if (bankedAmount >= Main.goal) {
+                    main.setBankedAmount(bankedAmount);
+                    if (bankedAmount >= main.getGoal()) {
                         Logger.info("Goal reached");
                         Bank.depositAllEquipment();
-                        Main.printResults();
+                        main.printResults();
                         main.showResults();
                         Bank.close();
                         ScriptManager.getScriptManager().stop();

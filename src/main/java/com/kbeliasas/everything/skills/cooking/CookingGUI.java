@@ -10,7 +10,7 @@ import javax.swing.*;
 public class CookingGUI extends JFrame implements SkillGUI {
     public CookingGUI(Main main) {
         super();
-        setTitle("com.kbeliasas.everything Cooking");
+        setTitle("Everything Cooking");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
         setResizable(false);
 

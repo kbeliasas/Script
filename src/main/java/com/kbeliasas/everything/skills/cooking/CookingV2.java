@@ -65,7 +65,7 @@ public class CookingV2 implements GenericSkill {
                         Bank.close();
                         ScriptManager.getScriptManager().stop();
                     }
-                    Main.goal = Bank.count(rawFish);
+                    main.setGoal( Bank.count(rawFish));
                 }
                 break;
             case TRAVELING:

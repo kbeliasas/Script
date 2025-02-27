@@ -1,11 +1,13 @@
 package com.kbeliasas.everything;
 
+import com.kbeliasas.everything.models.Loot;
 import com.kbeliasas.everything.naturalmouse.api.MouseMotionFactory;
 import com.kbeliasas.everything.naturalmouse.support.DefaultMouseMotionNature;
 import com.kbeliasas.everything.naturalmouse.support.RsMouseInfoAccessor;
 import com.kbeliasas.everything.naturalmouse.support.RsSystemCalls;
 import com.kbeliasas.everything.naturalmouse.util.FactoryTemplates;
 import com.kbeliasas.everything.skills.GenericSkill;
+import lombok.Getter;
 import lombok.Setter;
 import org.dreambot.api.Client;
 import org.dreambot.api.methods.Calculations;
@@ -30,21 +32,22 @@ import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "com.kbeliasas.everything", description = "My script description!", author = "Karolis",
         version = 1.0, category = Category.UTILITY, image = "")
+@Getter
 @Setter
 public class Main extends AbstractScript {
 
     private Util util;
 
-    public static States state = States.IDLE;
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
+    private List<Loot> lootedV2 = new ArrayList<>();
     public static Map<String, Integer> ignored = new HashMap<>();
     private Skill skillToTrain;
-    public static int goal = 158;
-    public static int goalXp = 100000; //49
-    public static int bankedAmount = 0;
-    public int profit = 0;
-    private static States cashedState = States.IDLE;
+    private List<Skill> additionalTrackingSkills = new ArrayList<>();
+    private int goal = 0;
+    private int goalXp = 0;
+    private int bankedAmount = 0;
+    private int profit = 0;
     private Instant startTime;
     private GenericSkill genericSkill;
     private Config config;
@@ -57,7 +60,7 @@ public class Main extends AbstractScript {
         var nature = new DefaultMouseMotionNature(new RsSystemCalls(), new RsMouseInfoAccessor());
         mouseMotionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
 //        Mouse.setMouseAlgorithm(new NaturalMouse());
-        Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
+        Client.getInstance().setMouseMfovementAlgorithm(new NaturalMouse());
         startTime = Instant.now();
         util = new Util();
         SwingUtilities.invokeLater(() -> new GUI(this));
@@ -69,8 +72,6 @@ public class Main extends AbstractScript {
             return Calculations.random(1000, 2000);
         }
         genericSkill.execute();
-//        stateTracker();
-//        turnOnRun();
         return Calculations.random(1000, 2000);
     }
 
@@ -95,6 +96,24 @@ public class Main extends AbstractScript {
                         (TimeUnit.MILLISECONDS.toSeconds(timeToLvl)) % 60));
         g.drawString(timeRunning, 5, y += 20);
         g.drawString(levels, 5, y += 20);
+
+        if (!additionalTrackingSkills.isEmpty()) {
+            for (Skill skill : additionalTrackingSkills) {
+                var timeToLvlSkill = SkillTracker.getTimeToLevel(skill);
+                var level = String.format("Skill %s. Current XP: %s K. Current lvl: %s. XP gained: %s K. Lvl gained: %s. Time to next level: %s",
+                        skill.getName(),
+                        Skills.getExperience(skill) / 1000,
+                        Skills.getRealLevel(skill),
+                        SkillTracker.getGainedExperience(skill) / 1000,
+                        SkillTracker.getGainedLevels(skill),
+                        String.format("%d:%02d:%02d",
+                                TimeUnit.MILLISECONDS.toHours(timeToLvlSkill),
+                                (TimeUnit.MILLISECONDS.toMinutes(timeToLvlSkill)) % 60,
+                                (TimeUnit.MILLISECONDS.toSeconds(timeToLvlSkill)) % 60));
+                g.drawString(level, 5, y += 20);
+            }
+        }
+
         var stateMessage = String.format("Current state: %s", stateString);
         g.drawString(stateMessage, 5, y += 20);
         if (profit != 0) {
@@ -125,7 +144,7 @@ public class Main extends AbstractScript {
             message.append("Time to goal: ");
             looted.forEach((lootName, lootCount) -> {
                 var itemsPerSecond = duration / lootCount;
-                var timeLeft = itemsPerSecond * (Main.goal);
+                var timeLeft = itemsPerSecond * (goal);
                 message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
             g.drawString(message.toString(), 5, y += 20);
@@ -168,7 +187,7 @@ public class Main extends AbstractScript {
         g.drawString(message, 5, y += 20);
     }
 
-    public static void printResults() {
+    public void printResults() {
         if (!looted.isEmpty()) {
             var message = new StringBuilder();
             message.append("Looted : ");
@@ -195,24 +214,8 @@ public class Main extends AbstractScript {
     private List<String> getResults() {
         var result = new ArrayList<String>();
 
-        var level = "Level Trained: " + skillToTrain.getName();
-        result.add(level);
-
-        var gainedExperience = "Gained XP: " + SkillTracker.getGainedExperience(skillToTrain) / 1000 + "K";
-        result.add(gainedExperience);
-
-        var gainedLeveles = "Gained Levels: " + SkillTracker.getGainedLevels(skillToTrain);
-        result.add(gainedLeveles);
-
-        var currentXP = "Current XP: " + Skills.getExperience(skillToTrain) / 1000 + "K";
-        result.add(currentXP);
-
-        var currentLevel = "Current Level: " + Skills.getRealLevel(skillToTrain);
-        result.add(currentLevel);
-
-        var xpRate = SkillTracker.getGainedExperiencePerHour(skillToTrain);
-        var xpRateMessage = "XP rate: " + xpRate / 1000 + " K per hour";
-        result.add(xpRateMessage);
+        addLevelResults(result, skillToTrain);
+        additionalTrackingSkills.forEach(skill -> addLevelResults(result, skill));
 
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeRan = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
@@ -235,11 +238,25 @@ public class Main extends AbstractScript {
         return result;
     }
 
-    private void stateTracker() {
-        if (!state.equals(cashedState)) {
-            Logger.info("Stated changed from " + cashedState.name() + " to " + state.name());
-            cashedState = state;
-        }
+    private void addLevelResults(ArrayList<String> result, Skill skill) {
+        var level = "Level Trained: " + skill.getName();
+        result.add(level);
+
+        var gainedExperience = "Gained XP: " + SkillTracker.getGainedExperience(skill) / 1000 + "K";
+        result.add(gainedExperience);
+
+        var gainedLeveles = "Gained Levels: " + SkillTracker.getGainedLevels(skill);
+        result.add(gainedLeveles);
+
+        var currentXP = "Current XP: " + Skills.getExperience(skill) / 1000 + "K";
+        result.add(currentXP);
+
+        var currentLevel = "Current Level: " + Skills.getRealLevel(skill);
+        result.add(currentLevel);
+
+        var xpRate = SkillTracker.getGainedExperiencePerHour(skill);
+        var xpRateMessage = "XP rate: " + xpRate / 1000 + " K per hour";
+        result.add(xpRateMessage);
     }
 
     private void turnOnRun() {
@@ -248,53 +265,5 @@ public class Main extends AbstractScript {
                 Walking.toggleRun();
             }
         }
-    }
-
-    public Skill getSkillToTrain() {
-        return skillToTrain;
-    }
-
-    public void setSkillToTrain(Skill skillToTrain) {
-        this.skillToTrain = skillToTrain;
-    }
-
-    public void setGenericSkill(GenericSkill genericSkill) {
-        this.genericSkill = genericSkill;
-    }
-
-    public void setConfig(Config config) {
-        this.config = config;
-    }
-
-    public boolean isStart() {
-        return start;
-    }
-
-    public void setStart(boolean start) {
-        this.start = start;
-    }
-
-    public void setStateString(String stateString) {
-        this.stateString = stateString;
-    }
-
-    public int getGoal() {
-        return goal;
-    }
-
-    public void setGoal(int goal) {
-        this.goal = goal;
-    }
-
-    public int getGoalXp() {
-        return goalXp;
-    }
-
-    public void setGoalXp(int goal) {
-        goalXp = goal;
-    }
-
-    public Util getUtil() {
-        return util;
     }
 }

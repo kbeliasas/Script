@@ -28,12 +28,14 @@ import org.dreambot.api.wrappers.items.GroundItem;
 
 import java.util.*;
 
+import static com.kbeliasas.everything.skills.combating.CombatingConfig.NATURE_RUNE;
+
 @RequiredArgsConstructor
 public class CombatingV2 implements GenericSkill {
 
     private final Main main;
     private final Skill skill;
-    private final int FOOD_ID;
+    private final Integer FOOD_ID;
     private final int FOOD_MIN;
     private final int FOOD_AMOUNT;
     private final int HP_MIN;
@@ -54,6 +56,8 @@ public class CombatingV2 implements GenericSkill {
             case BANKING:
             case NO_FOOD:
                 if (Banking.openBank()) {
+                    var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getID()));
+                    lootedItems.forEach(item -> Util.addLoot(item.getName(), item.getAmount()));
                     Bank.depositAllExcept(FOOD_ID);
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD_ID);
                     Bank.withdraw(FOOD_ID, needMore);
@@ -99,6 +103,7 @@ public class CombatingV2 implements GenericSkill {
                 bone = Inventory.get(BONES_ID);
                 if (bone != null) {
                     bone.interact();
+                    Util.addLoot(bone.getName());
                 }
                 break;
             case LOOKING_FOR_BATTLE:
@@ -205,11 +210,12 @@ public class CombatingV2 implements GenericSkill {
                     || item.getName().toLowerCase(Locale.ROOT).contains("key")) {
                 itemsFiltered.add(item);
                 Logger.info("Looted: " + item.getName() + ". Manually included from List");
-                Util.addLoot(item.getName());
             } else if (price > PRICE_MIN) {
                 itemsFiltered.add(item);
                 Logger.info("Looted: " + item.getName() + " for :" + price);
-                Util.addLoot(item.getName());
+            } else if (item.getItem().getHighAlchValue() - LivePrices.get(NATURE_RUNE) > price) {
+                itemsFiltered.add(item);
+                Logger.info("Looted: " + item.getName() + " for HA profit");
             } else {
                 Logger.info("ignored: " + item.getName() + " for :" + price);
                 Util.addIgnored(item.getName());

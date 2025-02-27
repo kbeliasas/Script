@@ -61,10 +61,10 @@ public class CraftingTiara implements CraftingGeneric {
                         if (!Bank.contains(barId)) {
                             Logger.log("Goal reached");
                             main.showResults();
-                            Main.printResults();
+                            main.printResults();
                             ScriptManager.getScriptManager().stop();
                         }
-                        Main.goal = Bank.count(bar -> bar.getID() == barId);
+                        main.setGoal(Bank.count(bar -> bar.getID() == barId));
                         Bank.withdrawAll(barId);
                     }
                     break;

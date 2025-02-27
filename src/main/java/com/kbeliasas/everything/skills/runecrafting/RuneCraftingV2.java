@@ -69,11 +69,11 @@ public class RuneCraftingV2 implements GenericSkill {
                     if (Bank.contains(this::pureEssence)) {
                         Bank.withdrawAll(this::pureEssence);
                     } else {
-                        Main.printResults();
+                        main.printResults();
                         main.showResults();
                         ScriptManager.getScriptManager().stop();
                     }
-                    Main.goal = Bank.count(this::pureEssence) * runesPerEssence;
+                    main.setGoal(Bank.count(this::pureEssence) * runesPerEssence);
                 }
                 break;
             case TRAVELING:

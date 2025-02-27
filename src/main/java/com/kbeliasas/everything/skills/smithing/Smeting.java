@@ -69,8 +69,7 @@ public class Smeting implements SmithingGeneric {
                     });
 //                    Bank.withdraw(ore -> ore.getName().toLowerCase(Locale.ROOT).contains(ORE), 14);
                     Sleep.sleep(Calculations.random(500, 1000));
-                    Main.goal = Bank.count(ore -> ore.getID() == oreId.orElseThrow()) / oresPerBar.orElseThrow();
-                    Main.state = States.IDLE;
+                    main.setGoal(Bank.count(ore -> ore.getID() == oreId.orElseThrow()) / oresPerBar.orElseThrow());
                 }
                 break;
             case TRAVELING:

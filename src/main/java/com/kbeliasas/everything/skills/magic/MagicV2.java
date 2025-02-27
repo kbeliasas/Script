@@ -80,7 +80,7 @@ public class MagicV2 implements MagicGeneric {
                     Sleep.sleep(Calculations.random(800, 1200));
                     Bank.close();
                     Sleep.sleep(Calculations.random(800, 1200));
-                    Main.printResults();
+                    main.printResults();
                     main.showResults();
                     ScriptManager.getScriptManager().stop();
                 }

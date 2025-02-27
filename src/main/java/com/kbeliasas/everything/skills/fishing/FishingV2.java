@@ -79,7 +79,7 @@ public class FishingV2 implements GenericSkill {
                     Bank.depositAllExcept(item -> item.getID() == equipmentID
                             || item.getName().toLowerCase(Locale.ROOT).contains("coins"));
                     Sleep.sleep(Calculations.random(500, 1000));
-                    Main.bankedAmount = Bank.count(item -> item.getID() == fishId);
+                    main.setBankedAmount(Bank.count(item -> item.getID() == fishId));
                     return;
                 }
                 break;
@@ -92,7 +92,7 @@ public class FishingV2 implements GenericSkill {
                     Sleep.sleep(Calculations.random(800, 1200));
                     Bank.close();
                     main.showResults();
-                    Main.printResults();
+                    main.printResults();
                     ScriptManager.getScriptManager().stop();
                     return;
                 }

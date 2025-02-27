@@ -5,13 +5,15 @@ import com.kbeliasas.everything.Main;
 import com.kbeliasas.everything.SkillGUI;
 import net.miginfocom.swing.MigLayout;
 import org.dreambot.api.methods.skills.Skill;
+import org.dreambot.api.methods.skills.SkillTracker;
 
 import javax.swing.*;
+import java.util.List;
 
 public class CombatingGUI extends JFrame implements SkillGUI {
     public CombatingGUI(Main main, Skill skill) {
         super();
-        setTitle("com.kbeliasas.everything Combat");
+        setTitle("Everything Combat");
         setLayout(new MigLayout("fill, gap 5, insets 10"));
         setResizable(false);
 
@@ -63,6 +65,8 @@ public class CombatingGUI extends JFrame implements SkillGUI {
                     ));
             main.setGoalXp(goal);
             main.setStart(true);
+            main.setAdditionalTrackingSkills(List.of(Skill.HITPOINTS, Skill.PRAYER));
+            SkillTracker.start(skill, Skill.HITPOINTS, Skill.PRAYER);
             dispose();
         });
 

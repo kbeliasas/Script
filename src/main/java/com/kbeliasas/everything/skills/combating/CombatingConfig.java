@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class CombatingConfig {
 
+    static Integer NATURE_RUNE = 561;
+
     @Getter
     enum Mob {
         MOSS_GIANT(new Area(3156, 9906, 3160, 9901), "Moss giant", 532);

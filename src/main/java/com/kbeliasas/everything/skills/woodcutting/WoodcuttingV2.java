@@ -79,8 +79,8 @@ public class WoodcuttingV2 implements GenericSkill {
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
-                    main.bankedAmount = Bank.count(item ->
-                            item.getName().toLowerCase(Locale.ROOT).contains(TREE));
+                    main.setBankedAmount(Bank.count(item ->
+                            item.getName().toLowerCase(Locale.ROOT).contains(TREE)));
                 }
                 break;
             case FINISHED:
@@ -92,8 +92,8 @@ public class WoodcuttingV2 implements GenericSkill {
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
-                    main.bankedAmount = Bank.count(item ->
-                            item.getName().toLowerCase(Locale.ROOT).contains(TREE));
+                    main.setBankedAmount(Bank.count(item ->
+                            item.getName().toLowerCase(Locale.ROOT).contains(TREE)));
                     Logger.log("Target xp reached!");
                     main.showResults();
                     main.printResults();
