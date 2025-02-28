@@ -42,8 +42,8 @@ public class Smeting implements SmithingGeneric {
                     Sleep.sleepUntil(Dialogues::inDialogue, Calculations.random(5000, 6000), Calculations.random(300, 500));
                     Widgets.get(270, widgetId).interact();
 //                    Keyboard.typeKey(Key.SPACE);
-                    var oreId = oreInfos.stream().findFirst().map(OreInfo::getOreID);
-                    Sleep.sleepUntil(() -> !Inventory.contains(oreId.orElseThrow()) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                    var oreIds = oreInfos.stream().map(OreInfo::getOreID).mapToInt(Integer::intValue).toArray();
+                    Sleep.sleepUntil(() -> !Inventory.contains(oreIds) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
                             Calculations.random(80000, 90000));
                 }
                 break;
@@ -58,12 +58,12 @@ public class Smeting implements SmithingGeneric {
                     Sleep.sleep(Calculations.random(500, 800));
                     var oreId = oreInfos.stream().findFirst().map(OreInfo::getOreID);
                     var oresPerBar = oreInfos.stream().findFirst().map(OreInfo::getOresPerBar);
-                    if (!Bank.contains(ore -> ore.getID() == oreId.orElseThrow())) {
-                        Logger.log("Goal reached");
-                        main.showResults();
-                        ScriptManager.getScriptManager().stop();
-                    }
                     oreInfos.forEach(oreInfo -> {
+                        if (Bank.count(oreInfo.getOreID()) < oreInfo.getOresPerBar()) {
+                            Logger.log("Goal reached");
+                            main.showResults();
+                            ScriptManager.getScriptManager().stop();
+                        }
                         Bank.withdraw(oreInfo.getOreID(), oreInfo.getCount());
                         Sleep.sleep(500, 800);
                     });

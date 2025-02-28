@@ -21,10 +21,12 @@ public class JewelleryGUI extends JFrame {
         nextButton.addActionListener((_event) -> {
             var product = (CraftingConfig.JewelleryProducts) productComboBox.getSelectedItem();
             main.setConfig(new Config(true, false, false));
-            var config = new CraftingConfig().getJewelleryConfig(product);
             main.setGenericSkill(
-                    new CraftingTiara(main,
-                            config.getBarID()));
+                    new CraftingV2(main,
+                            product.getResources(),
+                            product.getWidgetIds(),
+                            product.getMouldId(),
+                            product.getProductId()));
             main.setStart(true);
             dispose();
         });

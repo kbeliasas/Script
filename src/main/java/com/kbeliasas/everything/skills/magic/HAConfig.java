@@ -32,7 +32,8 @@ public class HAConfig {
     @RequiredArgsConstructor
     @Getter
     enum Item {
-        STEEL_PLATEBODY(1119);
+        STEEL_PLATEBODY(1119),
+        DIAMOND_NECKLACE(1662);
 
         private final Integer id;
     }

@@ -76,7 +76,7 @@ public class SmithingV2 implements GenericSkill {
                 Sleep.sleep(Calculations.random(4000, 5000));
                 makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
                 Sleep.sleepUntil(() -> !Inventory.contains(barId) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
-                        Calculations.random(70000, 80000));
+                        Calculations.random(30000, 40000));
                 break;
             case TRAVELING:
                 Walking.walk(ANVIL_PLACE.getRandomTile());
