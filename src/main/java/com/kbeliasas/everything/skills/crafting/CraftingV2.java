@@ -61,10 +61,10 @@ public class CraftingV2 implements GenericSkill {
                         if (resources.stream().map(CraftingConfig.Resource::getId).noneMatch(Bank::contains)) {
                             Logger.log("Goal reached");
                             main.showResults();
-                            Main.printResults();
+                            main.printResults();
                             ScriptManager.getScriptManager().stop();
                         }
-                        Main.goal = Bank.count(resources.stream().findFirst().get().getId());
+                        main.setGoal(Bank.count(resources.stream().findFirst().get().getId()));
                         resources.forEach(resource -> {
                             Bank.withdraw(resource.getId(), resource.getAmount());
                             Sleep.sleep(Calculations.random(500, 800));

@@ -40,7 +40,7 @@ public class Main extends AbstractScript {
 
     public static MouseMotionFactory mouseMotionFactory;
     public static Map<String, Integer> looted = new HashMap<>();
-    private List<Loot> lootedV2 = new ArrayList<>();
+    private Map<Integer, Loot> lootedV2 = new HashMap<>();
     public static Map<String, Integer> ignored = new HashMap<>();
     private Skill skillToTrain;
     private List<Skill> additionalTrackingSkills = new ArrayList<>();
@@ -60,7 +60,7 @@ public class Main extends AbstractScript {
         var nature = new DefaultMouseMotionNature(new RsSystemCalls(), new RsMouseInfoAccessor());
         mouseMotionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
 //        Mouse.setMouseAlgorithm(new NaturalMouse());
-        Client.getInstance().setMouseMfovementAlgorithm(new NaturalMouse());
+        Client.getInstance().setMouseMovementAlgorithm(new NaturalMouse());
         startTime = Instant.now();
         util = new Util();
         SwingUtilities.invokeLater(() -> new GUI(this));
@@ -209,6 +209,24 @@ public class Main extends AbstractScript {
     public void showResults() {
         var results = getResults();
         SwingUtilities.invokeLater(() -> new ResultsGUI(results));
+    }
+
+    public void addLoot(Integer id, String name) {
+        addLoot(id, name, 1);
+    }
+
+    public void addLoot(Integer id, String name, Integer amount) {
+        if (lootedV2.containsKey(id)) {
+            var loot = lootedV2.get(id);
+            loot.setAmount(loot.getAmount() + amount);
+            lootedV2.put(id, loot);
+        } else {
+            var loot = new Loot();
+            loot.setId(id);
+            loot.setAmount(amount);
+            loot.setName(name);
+            lootedV2.put(id, loot);
+        }
     }
 
     private List<String> getResults() {
