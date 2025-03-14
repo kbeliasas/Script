@@ -22,13 +22,13 @@ public class Loot {
 
     public boolean isHAProfit() {
         var item = new Item(id, 1);
-        return item.getHighAlchValue() - LivePrices.get(NATURE_RUNE) > getProfit();
+        return (item.getHighAlchValue() - LivePrices.get(NATURE_RUNE) * amount) > getProfit();
     }
 
     public Integer getHaProfit() {
         var item = new Item(id, 1);
         if (isHAProfit()) {
-            return item.getHighAlchValue() - LivePrices.get(NATURE_RUNE) - getProfit();
+            return (item.getHighAlchValue() - LivePrices.get(NATURE_RUNE)) * amount;
         }
         return -1;
     }
