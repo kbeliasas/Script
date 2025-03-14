@@ -54,7 +54,7 @@ public class CraftingV2 implements GenericSkill {
                         var products = Inventory.get(productID);
                         if (products != null) {
                             var amount = Inventory.count(products.getID());
-                            Util.addLoot(products.getName(), amount);
+                            main.addLoot(products.getID(), products.getName(), amount);
                         }
                         Bank.depositAllExcept(mould);
                         Sleep.sleep(Calculations.random(500, 800));

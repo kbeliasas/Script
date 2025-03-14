@@ -4,13 +4,6 @@ import org.dreambot.api.methods.interactive.Players;
 
 public class Util {
     private boolean wasAnimating = true;
-    public static void addLoot(String key) {
-        if (!Main.looted.containsKey(key)) {
-            Main.looted.put(key, 1);
-        } else {
-            Main.looted.put(key, Main.looted.get(key) + 1);
-        }
-    }
 
     public static void addLoot(String key, int amount) {
         if (!Main.looted.containsKey(key)) {

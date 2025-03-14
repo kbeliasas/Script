@@ -75,7 +75,7 @@ public class WoodcuttingV2 implements GenericSkill {
                     var logs = Inventory.get(LOGS_ID);
                     if (logs != null) {
                         var amount = Inventory.count(logs.getID());
-                        Util.addLoot(logs.getName(), amount);
+                        main.addLoot(logs.getID(), logs.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
@@ -88,7 +88,7 @@ public class WoodcuttingV2 implements GenericSkill {
                     var logs = Inventory.get(LOGS_ID);
                     if (logs != null) {
                         var amount = Inventory.count(logs.getID());
-                        Util.addLoot(logs.getName(), amount);
+                        main.addLoot(logs.getID(), logs.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));

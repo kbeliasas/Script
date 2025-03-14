@@ -57,7 +57,7 @@ public class CombatingV2 implements GenericSkill {
             case NO_FOOD:
                 if (Banking.openBank()) {
                     var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getID()));
-                    lootedItems.forEach(item -> Util.addLoot(item.getName(), item.getAmount()));
+                    lootedItems.forEach(item -> main.addLoot(item.getID(), item.getName(), item.getAmount()));
                     Bank.depositAllExcept(FOOD_ID);
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD_ID);
                     Bank.withdraw(FOOD_ID, needMore);
@@ -103,7 +103,7 @@ public class CombatingV2 implements GenericSkill {
                 bone = Inventory.get(BONES_ID);
                 if (bone != null) {
                     bone.interact();
-                    Util.addLoot(bone.getName());
+                    main.addLoot(bone.getID(), bone.getName());
                 }
                 break;
             case LOOKING_FOR_BATTLE:

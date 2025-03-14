@@ -52,7 +52,7 @@ public class CookingV2 implements GenericSkill {
                     var fishItem = Inventory.get(fishId);
                     if (fishItem != null) {
                         var amount = Inventory.count(fishId);
-                        Util.addLoot(fishItem.getName(), amount);
+                        main.addLoot(fishItem.getID(), fishItem.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));

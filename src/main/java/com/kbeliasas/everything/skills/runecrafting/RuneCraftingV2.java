@@ -62,7 +62,7 @@ public class RuneCraftingV2 implements GenericSkill {
                             item.getName().toLowerCase(Locale.ROOT).contains("rune"));
                     if (rune != null) {
                         var amount = Inventory.count(rune.getID());
-                        Util.addLoot(rune.getName(), amount);
+                        main.addLoot(rune.getID(), rune.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));

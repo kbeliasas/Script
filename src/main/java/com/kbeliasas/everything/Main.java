@@ -24,11 +24,10 @@ import org.dreambot.api.utilities.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @ScriptManifest(name = "com.kbeliasas.everything", description = "My script description!", author = "Karolis",
         version = 1.0, category = Category.UTILITY, image = "")
@@ -131,6 +130,17 @@ public class Main extends AbstractScript {
                             .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             g.drawString(message.toString(), 5, y += 20);
         }
+
+        if (!lootedV2.isEmpty()) {
+            var sortedLoot = lootedV2.values().stream()
+                    .sorted(Comparator.comparing(Loot::getGenericProfit).reversed())
+                    .collect(Collectors.toList());
+
+            var message = new StringBuilder();
+            message.append("Looted: ");
+            sortedLoot.forEach(loot -> message.append(loot.getMessage()));
+            g.drawString(message.toString(), 5, y += 20);
+        }
         if (!ignored.isEmpty()) {
             var message = new StringBuilder();
             message.append("Ignored: ");
@@ -142,8 +152,8 @@ public class Main extends AbstractScript {
         if (config.isPaintTimeToGoalItems()) {
             var message = new StringBuilder();
             message.append("Time to goal: ");
-            looted.forEach((lootName, lootCount) -> {
-                var itemsPerSecond = duration / lootCount;
+            lootedV2.forEach((id, loot) -> {
+                var itemsPerSecond = duration / loot.getAmount();
                 var timeLeft = itemsPerSecond * (goal);
                 message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
@@ -152,9 +162,9 @@ public class Main extends AbstractScript {
 
         if (config.isPaintTimeToGoalItemsCollect()) {
             var message = new StringBuilder();
-            looted.forEach((lootName, lootCount) -> {
+            lootedV2.forEach((id, loot) -> {
                 message.append("Time to goal: ");
-                var itemsPerSecond = duration / lootCount;
+                var itemsPerSecond = duration / loot.getAmount();
                 var timeLeft = itemsPerSecond * (goal - bankedAmount);
                 message.append(String.format("%d:%02d:%02d ", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
@@ -251,6 +261,16 @@ public class Main extends AbstractScript {
                     message.append(lootCount).append(" ").append(lootName)
                             .append(". Profit: ").append(LivePrices.get(lootName) * lootCount / 1000).append("K "));
             result.add(message.toString());
+        }
+
+        if (!lootedV2.isEmpty()) {
+            result.add("Looted :");
+
+            var sortedLoot = lootedV2.values().stream()
+                    .sorted(Comparator.comparing(Loot::getGenericProfit).reversed())
+                    .collect(Collectors.toList());
+
+            sortedLoot.forEach(loot -> result.add(loot.getMessage()));
         }
 
         return result;

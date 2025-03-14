@@ -55,11 +55,11 @@ public class SmithingV2 implements GenericSkill {
                     var product = Inventory.get(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
                     if (product != null) {
                         var amount = Inventory.count(product.getID());
-                        Util.addLoot(product.getName(), amount);
+                        main.addLoot(product.getID(), product.getName(), amount);
                     }
                     Bank.depositAllExcept(hammer -> hammer.getID() == HAMMER_ID);
                     Sleep.sleep(Calculations.random(500, 800));
-                    if (!Bank.contains(bar -> bar.getID() == barId)) {
+                    if (Bank.count(barId) < 5) {
                         Logger.log("Goal reached");
                         main.showResults();
                         main.printResults();
@@ -75,7 +75,7 @@ public class SmithingV2 implements GenericSkill {
                 anvil().interact("Smith");
                 Sleep.sleep(Calculations.random(4000, 5000));
                 makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
-                Sleep.sleepUntil(() -> !Inventory.contains(barId) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                Sleep.sleepUntil(() -> Inventory.count(barId) < 5 || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
                         Calculations.random(30000, 40000));
                 break;
             case TRAVELING:
@@ -95,17 +95,17 @@ public class SmithingV2 implements GenericSkill {
             return;
         }
 
-        if (anvil() != null && Inventory.contains(barId)) {
+        if (anvil() != null && Inventory.count(barId) >= 5) {
             state = State.SMITHING;
             return;
         }
 
-        if (anvil() == null && Inventory.contains(barId)) {
+        if (anvil() == null && Inventory.count(barId) >= 5) {
             state = State.TRAVELING;
             return;
         }
 
-        if (!Inventory.contains(barId)) {
+        if (Inventory.count(barId) < 5) {
             state = State.BANKING;
             return;
         }

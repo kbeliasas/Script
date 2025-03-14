@@ -42,8 +42,7 @@ public class Smeting implements SmithingGeneric {
                     Sleep.sleepUntil(Dialogues::inDialogue, Calculations.random(5000, 6000), Calculations.random(300, 500));
                     Widgets.get(270, widgetId).interact();
 //                    Keyboard.typeKey(Key.SPACE);
-                    var oreIds = oreInfos.stream().map(OreInfo::getOreID).mapToInt(Integer::intValue).toArray();
-                    Sleep.sleepUntil(() -> !Inventory.contains(oreIds) || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                    Sleep.sleepUntil(() -> !containsOres() || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
                             Calculations.random(80000, 90000));
                 }
                 break;
@@ -52,7 +51,7 @@ public class Smeting implements SmithingGeneric {
                     var bar = Inventory.get(item -> item.getName().toLowerCase(Locale.ROOT).contains("bar"));
                     if (bar != null) {
                         var amount = Inventory.count(bar.getID());
-                        Util.addLoot(bar.getName(), amount);
+                        main.addLoot(bar.getID(), bar.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 800));
@@ -88,18 +87,17 @@ public class Smeting implements SmithingGeneric {
     }
 
     void setState() {
-        var oreIds = oreInfos.stream().map(OreInfo::getOreID).mapToInt(Integer::intValue).toArray();
-        if (furnace() != null && Inventory.contains(oreIds)) {
+        if (furnace() != null && containsOres()) {
             state = State.SMELTING;
             return;
         }
 
-        if (furnace() == null && Inventory.contains(oreIds)) {
+        if (furnace() == null && containsOres()) {
             state = State.TRAVELING;
             return;
         }
 
-        if (!Inventory.contains(oreIds)) {
+        if (!containsOres()) {
             state = State.BANKING;
             return;
         }
@@ -115,5 +113,10 @@ public class Smeting implements SmithingGeneric {
                         && object.distance() <= 10
                         && object.canReach()
         );
+    }
+
+    private boolean containsOres() {
+        return oreInfos.stream()
+                .allMatch(oreInfo -> Inventory.count(oreInfo.getOreID()) > oreInfo.getOresPerBar());
     }
 }

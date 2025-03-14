@@ -86,7 +86,7 @@ public class HAItemV2 implements MagicGeneric {
                     profit = coins.getAmount() - startingCoins - (runesConsumption * LivePrices.get(NATURE_RUNE));
                     Sleep.sleep(Calculations.random(500, 1000));
 
-                    Util.addLoot(item.name(), Inventory.count(item.getId()));
+                    main.addLoot(item.getId(), item.name(), Inventory.count(item.getId()));
                     main.setGoal(Bank.count(item.getId()));
 
                     Bank.close();

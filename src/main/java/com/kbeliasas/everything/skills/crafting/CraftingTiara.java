@@ -54,7 +54,7 @@ public class CraftingTiara implements CraftingGeneric {
                         var tiaras = Inventory.get(tiara -> tiara.getID() == tiaraID);
                         if (tiaras != null) {
                             var amount = Inventory.count(tiaras.getID());
-                            Util.addLoot(tiaras.getName(), amount);
+                            main.addLoot(tiaras.getID(), tiaras.getName(), amount);
                         }
                         Bank.depositAllExcept(tiaraMould);
                         Sleep.sleep(Calculations.random(500, 800));

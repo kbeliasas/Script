@@ -56,14 +56,14 @@ public class MiningV2 implements GenericSkill {
                     var ore = Inventory.get(item -> item.getID() == oreID);
                     if (ore != null) {
                         var amount = Inventory.count(oreID);
-                        Util.addLoot(ore.getName(), amount);
+                        main.addLoot(ore.getID(), ore.getName(), amount);
                     }
                     var gems = Inventory.get(gem ->
                             gem.getName().toLowerCase(Locale.ROOT).contains("uncut")
                     );
                     if (gems != null) {
                         var amount = Inventory.count(gems.getID());
-                        Util.addLoot(gems.getName(), amount);
+                        main.addLoot(gems.getID(), gems.getName(), amount);
                     }
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(500, 1000));
