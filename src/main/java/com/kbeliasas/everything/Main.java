@@ -164,8 +164,8 @@ public class Main extends AbstractScript {
             var message = new StringBuilder();
             lootedV2.forEach((id, loot) -> {
                 message.append("Time to goal: ");
-                var itemsPerSecond = duration / loot.getAmount();
-                var timeLeft = itemsPerSecond * (goal - bankedAmount);
+                var itemsPerSecond = (double) duration / loot.getAmount();
+                var timeLeft = (long) (itemsPerSecond * (goal - bankedAmount));
                 message.append(String.format("%d:%02d:%02d ", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
             });
             g.drawString(message.toString(), 5, y += 20);
