@@ -73,7 +73,7 @@ public class FishingV2 implements GenericSkill {
                 break;
             case BANKING:
                 if (Banking.openBank()) {
-                    var fishes = Inventory.all(item -> item.getID() != equipmentID || !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
+                    var fishes = Inventory.all(item -> item.getID() != equipmentID && !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
                     fishes.forEach(fish -> {
                         var amount = Inventory.count(fish.getID());
                         main.addLoot(fish.getID(), fish.getName(), amount);
@@ -87,7 +87,7 @@ public class FishingV2 implements GenericSkill {
                 break;
             case FINISHING:
                 if (Banking.openBank()) {
-                    var fishes = Inventory.all(item -> item.getID() != equipmentID || !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
+                    var fishes = Inventory.all(item -> item.getID() != equipmentID && !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
                     fishes.forEach(fish -> {
                         var amount = Inventory.count(fish.getID());
                         main.addLoot(fish.getID(), fish.getName(), amount);
