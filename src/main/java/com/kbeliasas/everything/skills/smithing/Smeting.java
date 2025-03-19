@@ -117,6 +117,6 @@ public class Smeting implements SmithingGeneric {
 
     private boolean containsOres() {
         return oreInfos.stream()
-                .allMatch(oreInfo -> Inventory.count(oreInfo.getOreID()) > oreInfo.getOresPerBar());
+                .allMatch(oreInfo -> Inventory.count(oreInfo.getOreID()) >= oreInfo.getOresPerBar());
     }
 }
