@@ -74,10 +74,7 @@ public class FishingV2 implements GenericSkill {
             case BANKING:
                 if (Banking.openBank()) {
                     var fishes = Inventory.all(item -> item.getID() != equipmentID && !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
-                    fishes.forEach(fish -> {
-                        var amount = Inventory.count(fish.getID());
-                        main.addLoot(fish.getID(), fish.getName(), amount);
-                    });
+                    fishes.forEach(fish -> main.addLoot(fish.getID(), fish.getName()));
                     Bank.depositAllExcept(item -> item.getID() == equipmentID
                             || item.getName().toLowerCase(Locale.ROOT).contains("coins"));
                     Sleep.sleep(Calculations.random(500, 1000));
@@ -88,10 +85,7 @@ public class FishingV2 implements GenericSkill {
             case FINISHING:
                 if (Banking.openBank()) {
                     var fishes = Inventory.all(item -> item.getID() != equipmentID && !item.getName().toLowerCase(Locale.ROOT).contains("coins"));
-                    fishes.forEach(fish -> {
-                        var amount = Inventory.count(fish.getID());
-                        main.addLoot(fish.getID(), fish.getName(), amount);
-                    });
+                    fishes.forEach(fish -> main.addLoot(fish.getID(), fish.getName()));
                     Bank.depositAllItems();
                     Sleep.sleep(Calculations.random(800, 1200));
                     Bank.close();
