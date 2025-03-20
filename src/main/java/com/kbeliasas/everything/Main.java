@@ -83,7 +83,7 @@ public class Main extends AbstractScript {
         var duration = Instant.now().getEpochSecond() - startTime.getEpochSecond();
         var timeToLvl = SkillTracker.getTimeToLevel(skillToTrain);
         var timeRunning = String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60));
-        var levels = String.format("Skill %s. Current XP: %s K. Current lvl: %s. XP gained: %s K. Lvl gained: %s. Time to next level: %s",
+        var levels = String.format("Skill %s. Current XP: %s K. Current lvl: %s. Gained XP: %s K. Gained Lvl: %s. Time to next level: %s",
                 skillToTrain.getName(),
                 Skills.getExperience(skillToTrain) / 1000,
                 Skills.getRealLevel(skillToTrain),
@@ -99,7 +99,7 @@ public class Main extends AbstractScript {
         if (!additionalTrackingSkills.isEmpty()) {
             for (Skill skill : additionalTrackingSkills) {
                 var timeToLvlSkill = SkillTracker.getTimeToLevel(skill);
-                var level = String.format("Skill %s. Current XP: %s K. Current lvl: %s. XP gained: %s K. Lvl gained: %s. Time to next level: %s",
+                var level = String.format("Skill %s. Current XP: %s K. Current lvl: %s. Gained XP: %s K. Gained Lvl: %s. Time to next level: %s",
                         skill.getName(),
                         Skills.getExperience(skill) / 1000,
                         Skills.getRealLevel(skill),
@@ -162,12 +162,15 @@ public class Main extends AbstractScript {
 
         if (config.isPaintTimeToGoalItemsCollect()) {
             var message = new StringBuilder();
-            lootedV2.forEach((id, loot) -> {
-                message.append("Time to goal: ");
-                var itemsPerSecond = (double) duration / loot.getAmount();
-                var timeLeft = (long) (itemsPerSecond * (goal - bankedAmount));
-                message.append(String.format("%d:%02d:%02d ", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
-            });
+
+            lootedV2.values().stream()
+                    .sorted(Comparator.comparing(Loot::getAmount).reversed())
+                    .forEach(loot -> {
+                        message.append("Time to goal: ");
+                        var itemsPerSecond = (double) duration / loot.getAmount();
+                        var timeLeft = (long) (itemsPerSecond * (goal - bankedAmount));
+                        message.append(String.format("%d:%02d:%02d ", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
+                    });
             g.drawString(message.toString(), 5, y += 20);
 
             String bankedMessage = "Banked amount: " +
