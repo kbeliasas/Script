@@ -15,7 +15,6 @@ import org.dreambot.api.methods.grandexchange.LivePrices;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.SkillTracker;
 import org.dreambot.api.methods.skills.Skills;
-import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
@@ -298,13 +297,5 @@ public class Main extends AbstractScript {
         var xpRate = SkillTracker.getGainedExperiencePerHour(skill);
         var xpRateMessage = "XP rate: " + xpRate / 1000 + " K per hour";
         result.add(xpRateMessage);
-    }
-
-    private void turnOnRun() {
-        if (!Walking.isRunEnabled()) {
-            if (Walking.getRunEnergy() >= 35) {
-                Walking.toggleRun();
-            }
-        }
     }
 }
