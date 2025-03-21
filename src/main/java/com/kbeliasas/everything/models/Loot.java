@@ -17,27 +17,24 @@ public class Loot {
     private Integer amount;
 
     public Integer getProfit() {
-        return LivePrices.get(id) * amount;
+        return LivePrices.get(id);
     }
 
     public boolean isHAProfit() {
         var item = new Item(id, 1);
-        return (item.getHighAlchValue() - LivePrices.get(NATURE_RUNE) * amount) > getProfit();
+        return item.getHighAlchValue() > getProfit();
     }
 
     public Integer getHaProfit() {
         var item = new Item(id, 1);
-        if (isHAProfit()) {
-            return (item.getHighAlchValue() - LivePrices.get(NATURE_RUNE)) * amount;
-        }
-        return -1;
+        return (item.getHighAlchValue() - LivePrices.get(NATURE_RUNE));
     }
 
     public Integer getGenericProfit() {
         if (isHAProfit()) {
-            return getHaProfit();
+            return getHaProfit() * amount;
         } else {
-            return getProfit();
+            return getProfit() * amount;
         }
     }
 
@@ -49,10 +46,10 @@ public class Loot {
                 .append(amount);
         if (isHAProfit()) {
             message.append(". HA Profit: ");
-            message.append(getHaProfit() / 1000);
+            message.append(getGenericProfit() / 1000);
         } else {
             message.append(". Profit: ");
-            message.append(getProfit() / 1000);
+            message.append(getGenericProfit() / 1000);
         }
 
         message.append("K ");
