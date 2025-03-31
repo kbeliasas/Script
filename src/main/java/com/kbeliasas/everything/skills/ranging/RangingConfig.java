@@ -36,12 +36,14 @@ public class RangingConfig {
     @RequiredArgsConstructor
     @Getter
     enum Equipment {
-        LVL1(getRuneEquipmentMapLVL1());
+        LVL1(getEquipmentMapLVL1()),
+        LVL5(getEquipmentMapLVL5()),
+        LVL20(getEquipmentMapLVL20());
 
         private final Map<EquipmentSlot, Integer> equipmentMap;
     }
 
-    private static Map<EquipmentSlot, Integer> getRuneEquipmentMapLVL1() {
+    private static Map<EquipmentSlot, Integer> getEquipmentMapLVL1() {
         var map = new HashMap<EquipmentSlot, Integer>();
         map.put(EquipmentSlot.AMULET, 1731);
         map.put(EquipmentSlot.CHEST, 1131);
@@ -52,6 +54,34 @@ public class RangingConfig {
         map.put(EquipmentSlot.WEAPON, 841);
         map.put(EquipmentSlot.CAPE, 1019);
         map.put(EquipmentSlot.ARROWS, 884);
+        return map;
+    }
+
+    private static Map<EquipmentSlot, Integer> getEquipmentMapLVL5() {
+        var map = new HashMap<EquipmentSlot, Integer>();
+        map.put(EquipmentSlot.AMULET, 1731);
+        map.put(EquipmentSlot.CHEST, 1131);
+        map.put(EquipmentSlot.FEET, 1061);
+        map.put(EquipmentSlot.HANDS, 1063);
+        map.put(EquipmentSlot.HAT, 1167);
+        map.put(EquipmentSlot.LEGS, 1095);
+        map.put(EquipmentSlot.WEAPON, 843);
+        map.put(EquipmentSlot.CAPE, 1019);
+        map.put(EquipmentSlot.ARROWS, 886);
+        return map;
+    }
+
+    private static Map<EquipmentSlot, Integer> getEquipmentMapLVL20() {
+        var map = new HashMap<EquipmentSlot, Integer>();
+        map.put(EquipmentSlot.AMULET, 1731);
+        map.put(EquipmentSlot.CHEST, 1133);
+        map.put(EquipmentSlot.FEET, 1061);
+        map.put(EquipmentSlot.HANDS, 1063);
+        map.put(EquipmentSlot.HAT, 1169);
+        map.put(EquipmentSlot.LEGS, 1097);
+        map.put(EquipmentSlot.WEAPON, 849);
+        map.put(EquipmentSlot.CAPE, 1019);
+        map.put(EquipmentSlot.ARROWS, 888);
         return map;
     }
 
