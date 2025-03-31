@@ -7,6 +7,7 @@ import com.kbeliasas.everything.skills.firemaking.FiremakingGUI;
 import com.kbeliasas.everything.skills.fishing.FishingGUI;
 import com.kbeliasas.everything.skills.magic.MagicGenericGUI;
 import com.kbeliasas.everything.skills.mining.MiningGUI;
+import com.kbeliasas.everything.skills.ranging.RangingGUI;
 import com.kbeliasas.everything.skills.runecrafting.RuneCraftingGUI;
 import com.kbeliasas.everything.skills.smithing.SmithingGenericGUI;
 import com.kbeliasas.everything.skills.woodcutting.WoodcuttingGUI;
@@ -30,7 +31,7 @@ public class GUIFactory {
             case HITPOINTS:
                 break;
             case RANGED:
-                break;
+                return new RangingGUI(main);
             case PRAYER:
                 break;
             case MAGIC:

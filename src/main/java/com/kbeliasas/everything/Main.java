@@ -182,9 +182,9 @@ public class Main extends AbstractScript {
             message.append("Time to goal: ");
             var xpPerHour = SkillTracker.getGainedExperiencePerHour(skillToTrain);
             if (xpPerHour > 0) {
-                var xpPerSecond = xpPerHour / (60 * 60);
+                var xpPerSecond = (double) xpPerHour / (60 * 60);
                 var xpLeft = goalXp - Skills.getExperience(skillToTrain);
-                var timeLeft = xpLeft / xpPerSecond;
+                var timeLeft = (long) (xpLeft / xpPerSecond);
                 if (xpLeft > 0) {
                     message.append(String.format("%d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, (timeLeft % 60)));
                 }

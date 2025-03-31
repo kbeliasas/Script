@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.dreambot</groupId>
             <artifactId>client</artifactId>
-            <version>3.29.9</version>
+            <version>3.29.11</version>
             <scope>system</scope>
             <systemPath>${dreambot.path}/BotData/client.jar</systemPath>
         </dependency>
