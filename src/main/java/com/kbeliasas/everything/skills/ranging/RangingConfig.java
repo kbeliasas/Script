@@ -11,6 +11,7 @@ import java.util.Map;
 public class RangingConfig {
 
     static Integer NATURE_RUNE = 561;
+    static Integer KNIFE = 946;
 
     @Getter
     @RequiredArgsConstructor

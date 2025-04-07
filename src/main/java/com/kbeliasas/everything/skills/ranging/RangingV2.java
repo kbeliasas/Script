@@ -28,6 +28,7 @@ import org.dreambot.api.wrappers.items.GroundItem;
 
 import java.util.*;
 
+import static com.kbeliasas.everything.skills.ranging.RangingConfig.KNIFE;
 import static com.kbeliasas.everything.skills.ranging.RangingConfig.NATURE_RUNE;
 
 @RequiredArgsConstructor
@@ -60,9 +61,9 @@ public class RangingV2 implements GenericSkill {
                     Inventory.get(ARROW_ID).interact();
                 }
                 if (Banking.openBank()) {
-                    var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getID()));
+                    var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getID()) && !KNIFE.equals(item.getID()));
                     lootedItems.forEach(item -> main.addLoot(item.getID(), item.getName(), item.getAmount()));
-                    Bank.depositAllExcept(FOOD_ID);
+                    Bank.depositAllExcept(FOOD_ID, KNIFE);
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD_ID);
                     Bank.withdraw(FOOD_ID, needMore);
                     if (Bank.count(FOOD_ID) <= FOOD_AMOUNT) {
@@ -141,9 +142,11 @@ public class RangingV2 implements GenericSkill {
                 break;
             case PREP:
                 var equipmentIds = EQUIPMENT_MAP.values().stream().mapToInt(Integer::intValue).toArray();
-                if (Equipment.onlyContains(equipmentIds)) {
+                var stuffIds = Arrays.copyOf(equipmentIds, equipmentIds.length + 1);
+                stuffIds[stuffIds.length - 1] = KNIFE;
+                if (Equipment.onlyContains(equipmentIds) && Inventory.contains(KNIFE)) {
                     ready = true;
-                } else if (Inventory.containsAll(equipmentIds)) {
+                } else if (Inventory.containsAll(stuffIds)) {
                     EQUIPMENT_MAP.keySet().forEach(equipmentSlot -> {
                         Equipment.equip(equipmentSlot, EQUIPMENT_MAP.get(equipmentSlot));
                         Sleep.sleep(Calculations.random(800, 1500));
@@ -152,7 +155,7 @@ public class RangingV2 implements GenericSkill {
                     if (Banking.openBank()) {
                         Bank.depositAllItems();
                         Bank.depositAllEquipment();
-                        Arrays.stream(equipmentIds).forEach(item -> {
+                        Arrays.stream(stuffIds).forEach(item -> {
                             if (item == ARROW_ID) {
                                 Bank.withdrawAll(item);
                             } else {
