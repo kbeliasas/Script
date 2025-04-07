@@ -9,6 +9,7 @@ import com.kbeliasas.everything.naturalmouse.util.FactoryTemplates;
 import com.kbeliasas.everything.skills.GenericSkill;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.dreambot.api.Client;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.grandexchange.LivePrices;
@@ -42,6 +43,7 @@ public class Main extends AbstractScript {
     public static Map<String, Integer> ignored = new HashMap<>();
     private Skill skillToTrain;
     private List<Skill> additionalTrackingSkills = new ArrayList<>();
+    private String additionalMessage;
     private int goal = 0;
     private int goalXp = 0;
     private int bankedAmount = 0;
@@ -197,6 +199,10 @@ public class Main extends AbstractScript {
         var xpRate = SkillTracker.getGainedExperiencePerHour(skillToTrain);
         var message = "XP rate: " + xpRate / 1000 + " K per hour";
         g.drawString(message, 5, y += 20);
+
+        if (!StringUtils.isEmpty(additionalMessage)) {
+            g.drawString(additionalMessage, 5, y += 20);
+        }
     }
 
     public void printResults() {

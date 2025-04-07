@@ -67,6 +67,7 @@ public class RangingV2 implements GenericSkill {
                     Bank.withdraw(FOOD_ID, needMore);
                     if (Bank.count(FOOD_ID) <= FOOD_AMOUNT) {
                         Logger.log("NO MORE FOOD");
+                        main.showResults();
                         main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
@@ -78,12 +79,14 @@ public class RangingV2 implements GenericSkill {
 
                     if (equippedArrows.isPresent() && equippedArrows.get().getAmount() <= 100) {
                         Logger.log("NO MORE ARROWS");
+                        main.showResults();
                         main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
 
                     if (equippedArrows.isEmpty()) {
                         Logger.log("NO MORE ARROWS");
+                        main.showResults();
                         main.printResults();
                         ScriptManager.getScriptManager().stop();
                     }
@@ -211,7 +214,9 @@ public class RangingV2 implements GenericSkill {
             return;
         }
 
-        if (equippedArrows.get().getAmount() <= 10) {
+        var arrows = equippedArrows.get();
+        main.setAdditionalMessage(arrows.getName() + " left: " + arrows.getAmount());
+        if (arrows.getAmount() <= 10) {
             state = State.NO_MORE_ARROWS;
             return;
         }

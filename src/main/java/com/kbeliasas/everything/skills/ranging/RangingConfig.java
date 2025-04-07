@@ -16,6 +16,8 @@ public class RangingConfig {
     @RequiredArgsConstructor
     enum Mob {
         GOBLINS(new Area(3245, 3242, 3256, 3231), "Goblin", 526),
+        BARBARIANS(new Area(3073, 3425, 3088, 3410), "Barbarian", 526),
+        GIANT_FROGS(new Area(3180, 3195, 3207, 3178), "Giant frog", 532),
         MOSS_GIANT(new Area(3156, 9906, 3160, 9901), "Moss giant", 532);
 
         private final Area area;
@@ -36,9 +38,11 @@ public class RangingConfig {
     @RequiredArgsConstructor
     @Getter
     enum Equipment {
-        LVL1(getEquipmentMapLVL1()),
+        LVL40(getEquipmentMapLVL40()),
+        LVL30(getEquipmentMapLVL30()),
+        LVL20(getEquipmentMapLVL20()),
         LVL5(getEquipmentMapLVL5()),
-        LVL20(getEquipmentMapLVL20());
+        LVL1(getEquipmentMapLVL1());
 
         private final Map<EquipmentSlot, Integer> equipmentMap;
     }
@@ -85,11 +89,31 @@ public class RangingConfig {
         return map;
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    enum Arrows {
-        IRON(884);
+    private static Map<EquipmentSlot, Integer> getEquipmentMapLVL30() {
+        var map = new HashMap<EquipmentSlot, Integer>();
+        map.put(EquipmentSlot.AMULET, 1731);
+        map.put(EquipmentSlot.CHEST, 1133);
+        map.put(EquipmentSlot.FEET, 1061);
+        map.put(EquipmentSlot.HANDS, 1063);
+        map.put(EquipmentSlot.HAT, 1169);
+        map.put(EquipmentSlot.LEGS, 1097);
+        map.put(EquipmentSlot.WEAPON, 853);
+        map.put(EquipmentSlot.CAPE, 1019);
+        map.put(EquipmentSlot.ARROWS, 890);
+        return map;
+    }
 
-        private final int arrowId;
+    private static Map<EquipmentSlot, Integer> getEquipmentMapLVL40() {
+        var map = new HashMap<EquipmentSlot, Integer>();
+        map.put(EquipmentSlot.AMULET, 1731);
+        map.put(EquipmentSlot.CHEST, 1135);
+        map.put(EquipmentSlot.FEET, 1061);
+        map.put(EquipmentSlot.HANDS, 1065);
+        map.put(EquipmentSlot.HAT, 1169);
+        map.put(EquipmentSlot.LEGS, 1099);
+        map.put(EquipmentSlot.WEAPON, 853);
+        map.put(EquipmentSlot.CAPE, 1019);
+        map.put(EquipmentSlot.ARROWS, 890);
+        return map;
     }
 }
