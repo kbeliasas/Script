@@ -19,7 +19,7 @@ public class RangingConfig {
         GOBLINS(new Area(3245, 3242, 3256, 3231), "Goblin", 526),
         BARBARIANS(new Area(3073, 3425, 3088, 3410), "Barbarian", 526),
         GIANT_FROGS(new Area(3180, 3195, 3207, 3178), "Giant frog", 532),
-        MOSS_GIANT(new Area(3156, 9906, 3160, 9901), "Moss giant", 532);
+        MOSS_GIANT(new Area(3165, 9882, 3167, 9878), "Moss giant", 532);
 
         private final Area area;
         private final String name;
