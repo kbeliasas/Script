@@ -1,7 +1,6 @@
 package com.kbeliasas.everything.skills.smithing;
 
 import com.kbeliasas.everything.Main;
-import com.kbeliasas.everything.Util;
 import com.kbeliasas.everything.skills.Banking;
 import com.kbeliasas.everything.skills.GenericSkill;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.dreambot.api.wrappers.interactive.GameObject;
 
 import java.util.Locale;
 
+import static org.dreambot.api.methods.widget.helpers.Smithing.isOpen;
 import static org.dreambot.api.methods.widget.helpers.Smithing.makeAll;
 
 @RequiredArgsConstructor
@@ -74,9 +74,11 @@ public class SmithingV2 implements GenericSkill {
                 var smithingLevel = Skills.getRealLevel(Skill.SMITHING);
                 anvil().interact("Smith");
                 Sleep.sleep(Calculations.random(4000, 5000));
-                makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
-                Sleep.sleepUntil(() -> Inventory.count(barId) < 5 || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
-                        Calculations.random(30000, 40000));
+                if (isOpen()) {
+                    makeAll(item -> item.getName().toLowerCase(Locale.ROOT).contains(PRODUCT));
+                    Sleep.sleepUntil(() -> Inventory.count(barId) < 5 || Skills.getRealLevel(Skill.SMITHING) > smithingLevel,
+                            Calculations.random(30000, 40000));
+                }
                 break;
             case TRAVELING:
                 Walking.walk(ANVIL_PLACE.getRandomTile());
