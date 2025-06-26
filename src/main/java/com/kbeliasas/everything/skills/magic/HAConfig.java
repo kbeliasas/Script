@@ -33,7 +33,10 @@ public class HAConfig {
     @Getter
     enum Item {
         STEEL_PLATEBODY(1119),
-        DIAMOND_NECKLACE(1662);
+        DIAMOND_NECKLACE(1662),
+        BLACK_SQ_SHIELD(1179),
+        MITHRIL_SWORD(1285),
+        STEEL_MED_HELM(1141);
 
         private final Integer id;
     }

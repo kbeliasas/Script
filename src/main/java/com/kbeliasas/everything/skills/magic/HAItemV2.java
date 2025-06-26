@@ -1,7 +1,6 @@
 package com.kbeliasas.everything.skills.magic;
 
 import com.kbeliasas.everything.Main;
-import com.kbeliasas.everything.Util;
 import com.kbeliasas.everything.skills.Banking;
 import lombok.RequiredArgsConstructor;
 import org.dreambot.api.methods.Calculations;
