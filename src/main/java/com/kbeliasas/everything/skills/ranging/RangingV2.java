@@ -272,7 +272,7 @@ public class RangingV2 implements GenericSkill {
     }
 
     private List<GroundItem> getGroundItems() {
-        return GroundItems.all(item -> item.distance() < 5 && item.canReach());
+        return GroundItems.all(item -> item.distance() < 7 && item.canReach());
     }
 
     private NPC getMob() {
