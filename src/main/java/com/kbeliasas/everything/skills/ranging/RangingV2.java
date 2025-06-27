@@ -65,7 +65,9 @@ public class RangingV2 implements GenericSkill {
                     lootedItems.forEach(item -> main.addLoot(item.getID(), item.getName(), item.getAmount()));
                     Bank.depositAllExcept(FOOD_ID, KNIFE);
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD_ID);
-                    Bank.withdraw(FOOD_ID, needMore);
+                    if (needMore > 0) {
+                        Bank.withdraw(FOOD_ID, needMore);
+                    }
                     if (Bank.count(FOOD_ID) <= FOOD_AMOUNT) {
                         Logger.log("NO MORE FOOD");
                         main.showResults();
