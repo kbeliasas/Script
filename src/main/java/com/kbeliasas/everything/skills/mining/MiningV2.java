@@ -1,7 +1,6 @@
 package com.kbeliasas.everything.skills.mining;
 
 import com.kbeliasas.everything.Main;
-import com.kbeliasas.everything.Util;
 import com.kbeliasas.everything.skills.Banking;
 import com.kbeliasas.everything.skills.GenericSkill;
 import lombok.RequiredArgsConstructor;
@@ -84,10 +83,14 @@ public class MiningV2 implements GenericSkill {
                 break;
             case MINING:
                 var rocks = rocks();
-                if (rocks.interact("Mine")) {
-                    Sleep.sleepUntil(() -> sameRock(rocks) == null,
-                            Calculations.random(8000, 12000),
-                            Calculations.random(300, 600));
+                if (rocks.distance() > 10) {
+                    Walking.walk(rocks.getTile());
+                } else {
+                    if (rocks.interact("Mine")) {
+                        Sleep.sleepUntil(() -> sameRock(rocks) == null,
+                                Calculations.random(8000, 12000),
+                                Calculations.random(300, 600));
+                    }
                 }
                 break;
             case WAITING:
@@ -146,6 +149,7 @@ public class MiningV2 implements GenericSkill {
                 object.getName().equalsIgnoreCase(rocksName)
                         && object.hasAction("Mine")
                         && object.distance() <= distance
+                        && object.canReach()
                         && object.getModelColors() != null
         );
     }

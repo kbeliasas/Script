@@ -52,8 +52,6 @@ public class HAItemV2 implements MagicGeneric {
                         Bank.depositAllEquipment();
                         Bank.withdraw(STAFF_OF_FIRE);
                         Sleep.sleep(Calculations.random(500, 1000));
-                        Bank.close();
-                        Sleep.sleep(Calculations.random(500, 1000));
                     }
                 }
                 break;
@@ -62,9 +60,7 @@ public class HAItemV2 implements MagicGeneric {
                     Bank.withdrawAll(NATURE_RUNE);
                     Sleep.sleep(Calculations.random(500, 1000));
                     Bank.withdrawAll(item -> item.getName().toLowerCase(Locale.ROOT).contains("coin"));
-                    Sleep.sleep(Calculations.random(500, 1000));
-                    Bank.close();
-                    Sleep.sleep(Calculations.random(500, 1000));
+                    Sleep.sleep(Calculations.random(1000, 2000));
                     startingRunes = Inventory.count(NATURE_RUNE);
                     startingCoins = Inventory.count(item -> item.getName().toLowerCase(Locale.ROOT).contains("coin"));
                 }
