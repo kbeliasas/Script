@@ -33,6 +33,7 @@ public class HAConfig {
     @Getter
     enum Item {
         STEEL_PLATEBODY(1119),
+        MITHRIL_PLATEBODY(1121),
         DIAMOND_NECKLACE(1662),
         BLACK_SQ_SHIELD(1179),
         MITHRIL_SWORD(1285),
