@@ -44,7 +44,7 @@ public class RangingV2 implements GenericSkill {
     private final int PRICE_MIN;
     private final int BONES_ID;
     private final Map<EquipmentSlot, Integer> EQUIPMENT_MAP;
-    private final int ARROW_ID;
+    private final Integer ARROW_ID;
     private State state;
     private ArrayList<GroundItem> loot = new ArrayList<>();
     private boolean ready = false;
@@ -57,13 +57,10 @@ public class RangingV2 implements GenericSkill {
             case BANKING:
             case NO_MORE_ARROWS:
             case NO_FOOD:
-                if (Inventory.contains(ARROW_ID)) {
-                    Inventory.get(ARROW_ID).interact();
-                }
                 if (Banking.openBank()) {
-                    var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getID()) && !KNIFE.equals(item.getID()));
-                    lootedItems.forEach(item -> main.addLoot(item.getID(), item.getName(), item.getAmount()));
-                    Bank.depositAllExcept(FOOD_ID, KNIFE);
+                    var lootedItems = Inventory.all(item -> !FOOD_ID.equals(item.getId()) && !KNIFE.equals(item.getId()) && !ARROW_ID.equals(item.getId()));
+                    lootedItems.forEach(item -> main.addLoot(item.getId(), item.getName(), item.getAmount()));
+                    Bank.depositAllExcept(FOOD_ID, KNIFE, ARROW_ID);
                     var needMore = FOOD_AMOUNT - Inventory.count(FOOD_ID);
                     if (needMore > 0) {
                         Bank.withdraw(FOOD_ID, needMore);
@@ -77,7 +74,7 @@ public class RangingV2 implements GenericSkill {
 
                     var equippedArrows = Equipment.all().stream()
                             .filter(Objects::nonNull)
-                            .filter(item -> item.getID() == ARROW_ID)
+                            .filter(item -> item.getId() == ARROW_ID)
                             .findFirst();
 
                     if (equippedArrows.isPresent() && equippedArrows.get().getAmount() <= 100) {
@@ -146,7 +143,7 @@ public class RangingV2 implements GenericSkill {
                 bone = Inventory.get(BONES_ID);
                 if (bone != null) {
                     bone.interact();
-                    main.addLoot(bone.getID(), bone.getName());
+                    main.addLoot(bone.getId(), bone.getName());
                 }
                 break;
             case LOOKING_FOR_BATTLE:
@@ -224,7 +221,7 @@ public class RangingV2 implements GenericSkill {
         }
         var equippedArrows = Equipment.all().stream()
                 .filter(Objects::nonNull)
-                .filter(item -> item.getID() == ARROW_ID)
+                .filter(item -> item.getId() == ARROW_ID)
                 .findFirst();
 
         if (equippedArrows.isEmpty()) {
@@ -262,12 +259,12 @@ public class RangingV2 implements GenericSkill {
         var itemsFiltered = new ArrayList<GroundItem>();
         var items = getGroundItems();
         items.forEach(item -> {
-            var price = LivePrices.get(item.getID());
+            var price = LivePrices.get(item.getId());
             if (item.getName().equalsIgnoreCase("Coins")
-                    || item.getID() == BONES_ID
+                    || item.getId() == BONES_ID
                     || item.getName().toLowerCase(Locale.ROOT).contains("rune")
                     || item.getName().toLowerCase(Locale.ROOT).contains("clue")
-                    || item.getID() == ARROW_ID
+                    || item.getId() == ARROW_ID
                     || item.getName().toLowerCase(Locale.ROOT).contains("key")) {
                 itemsFiltered.add(item);
                 Logger.info("Looted: " + item.getName() + ". Manually included from List");
