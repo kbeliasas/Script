@@ -94,9 +94,22 @@ public class CombatingV2 implements GenericSkill {
                 Inventory.interact(FOOD_ID);
                 break;
             case LOOTING:
+                // Optional but recommended: Sort loot by distance to be more efficient.
+                loot.sort(Comparator.comparingDouble(l -> Players.getLocal().distance(l)));
+
                 loot.forEach(item -> {
-                    item.interact("Take");
-                    Sleep.sleep(Calculations.random(800, 1500));
+                    // Make sure the item still exists before trying to take it.
+                    if (item != null && item.exists()) {
+                        // Get the inventory count of the item *before* picking it up.
+                        int initialCount = Inventory.count(item.getId());
+
+                        // Interact with the item.
+                        if (item.interact("Take")) {
+                            // Wait until the item is no longer on the ground OR our inventory count increases.
+                            // The 10,000 ms timeout prevents the script from getting stuck.
+                            Sleep.sleepUntil(() -> !item.exists() || Inventory.count(item.getId()) > initialCount, 10000);
+                        }
+                    }
                 });
                 break;
             case PRAYER:
