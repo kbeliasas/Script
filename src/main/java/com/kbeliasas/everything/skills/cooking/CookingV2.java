@@ -128,7 +128,7 @@ public class CookingV2 implements GenericSkill {
     private GameObject cookingRange() {
         return GameObjects.closest(range ->
                 range.getName().toLowerCase(Locale.ROOT).contains("stove") &&
-                        range.canReach() && range.distance() <= 10);
+                        range.canReach() && range.distance() <= 7);
     }
 
     private boolean haveRawFish() {
