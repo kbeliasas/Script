@@ -65,7 +65,7 @@ public class CookingV2 implements GenericSkill {
                         Bank.close();
                         ScriptManager.getScriptManager().stop();
                     }
-                    main.setGoal( Bank.count(rawFish));
+                    main.setGoal(Bank.count(rawFish));
                 }
                 break;
             case TRAVELING:
@@ -74,13 +74,16 @@ public class CookingV2 implements GenericSkill {
             case COOKING:
                 var cookingLevel = Skills.getRealLevel(Skill.COOKING);
                 cookingRange().interact("Cook");
-                Sleep.sleepUntil(() -> Players.getLocal().isStandingStill() && Dialogues.inDialogue(),
-                        Calculations.random(30000, 40000),
+                Sleep.sleepUntil(() -> Players.getLocal().isStandingStill(),
+                        Calculations.random(10000, 20000),
                         Calculations.random(500, 1000));
-                Keyboard.typeKey(Key.SPACE);
-                Sleep.sleepUntil(() -> !Inventory.contains(rawFish) || Skills.getRealLevel(Skill.COOKING) > cookingLevel
-                        , Calculations.random(70000, 80000));
-                break;
+                if (Dialogues.inDialogue()) {
+                    Sleep.sleep(Calculations.random(1000, 2000));
+                    Keyboard.typeKey(Key.SPACE);
+                    Sleep.sleepUntil(() -> !Inventory.contains(rawFish) || Skills.getRealLevel(Skill.COOKING) > cookingLevel
+                            , Calculations.random(70000, 80000));
+                    break;
+                }
             case DROPPING:
                 Inventory.dropAll(item -> item.getName().toLowerCase(Locale.ROOT).contains("burnt"));
                 break;
